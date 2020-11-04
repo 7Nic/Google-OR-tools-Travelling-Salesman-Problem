@@ -1,36 +1,63 @@
-# Resolução de um problema do Caixeiro Viajante com o método Simplex para disciplina de Pesquisa Operacional - UFAL
-# Equipe: Vanessa Vieira, Rubem Ferreira e André Santana
-# Professora: Roberta Lopes
+from ortools.linear_solver import pywraplp
+import itertools
+
+# Create the mip solver with the SCIP backend.
+solver = pywraplp.Solver.CreateSolver('SCIP')
+
+costs = [[1000000, 100, 125, 100,75],
+ [100, 1000000, 50, 75, 125],
+ [125, 50, 1000000, 100, 125],
+ [100, 75, 100, 1000000, 50],
+ [75, 125, 125, 50, 1000000]]
+num_galaxies = len(costs)
+
+x = {}
+for i in range(num_galaxies):
+    for j in range(num_galaxies):
+        x[i, j] = solver.IntVar(0, 1, '')
+
+for i in range(num_galaxies):
+    solver.Add(solver.Sum([x[i, j] for j in range(num_galaxies)]) == 1)
+
+for j in range(num_galaxies):
+    solver.Add(solver.Sum([x[i, j] for i in range(num_galaxies)]) == 1)
+
+Q = set()
+l = list()
+for i in range(num_galaxies):
+    l.append(i)
+
+for i in range(2,num_galaxies):
+    subsets = set(itertools.combinations(l,i))
+    for subset in subsets:
+        Q.add(subset)
 
 
-# Modelagem do problema:
+for subset in Q:
+    my_sum = []
+    for i in subset:
+        for j in subset:
+            if (i != j):
+                my_sum.append(x[i,j])
+    solver.Add(solver.Sum(my_sum) <= len(subset) - 1)
 
-# Minimizar:
+# Objective
+objective_terms = []
+for i in range(num_galaxies):
+    for j in range(num_galaxies):
+        objective_terms.append(costs[i][j] * x[i, j])
+solver.Minimize(solver.Sum(objective_terms))
 
-# Z = 12 X1 + 4 X2 + 3 X3 + 5 X4 + 5 X5 + 3 X6 + 2 X7 + 10 X8 +
-#                10 X9 + 2 X10 + 10 X11 + 10 X12 + 2 X13 + 4 X14
+# Solve
+status = solver.Solve()
 
-# Restrições:
+# Print solution.
+if status == pywraplp.Solver.OPTIMAL or status == pywraplp.Solver.FEASIBLE:
+    print('Total cost = ', solver.Objective().Value(), '\n')
+    for i in range(num_galaxies):
+        for j in range(num_galaxies):
+            # Test if x[i,j] is 1 (with tolerance for floating point arithmetic).
+            if x[i, j].solution_value() > 0.5:
+                print('Galaxy %d to galaxy %d.  Cost = %d' %
+                     (i, j, costs[i][j]))
 
-# 1 X1 + 1 X2 + 0 X3 + 0 X4 + 0 X5 + 0 X6 + 0 X7 + 0 X8 + 0 X9 + 0 X10 + 0 X11 + 0 X12 + 0 X13 + 0 X14 = 1
-# -1 X1 + 0 X2 + 1 X3 + 1 X4 -1 X5 -1 X6 + 0 X7 + 0 X8 + 0 X9 + 0 X10 + 0 X11 + 0 X12 + 0 X13 + 0 X14 = 0
-# 0 X1 -1 X2 + 0 X3 + 0 X4 + 0 X5 + 0 X6 + 1 X7 + 1 X8 -1 X9 -1 X10 + 0 X11 + 0 X12 + 0 X13 + 0 X14 = 0
-# 0 X1 + 0 X2 + 0 X3 -1 X4 + 1 X5 + 0 X6 -1 X7 + 0 X8 + 0 X9 + 1 X10 + 1 X11 -1 X12 + 0 X13 + 0 X14 = 0
-# 0 X1 + 0 X2 -1 X3 + 0 X4 + 0 X5 + 1 X6 + 0 X7 + 0 X8 + 0 X9 + 0 X10 -1 X11 + 1 X12 + 1 X13 + 0 X14 = 0
-# 0 X1 + 0 X2 + 0 X3 + 0 X4 + 0 X5 + 0 X6 + 0 X7 -1 X8 + 1 X9 + 0 X10 + 0 X11 + 0 X12 + 0 X13 + 1 X14 = 0
-# 0 X1 + 0 X2 + 0 X3 + 0 X4 + 0 X5 + 0 X6 + 0 X7 + 0 X8 + 0 X9 + 0 X10 + 0 X11 + 0 X12 -1 X13 -1 X14 = -1
-
-from scipy.optimize import linprog
-
-c = [12, 4, 3, 5, 5, 3, 2, 10, 10, 2, 10, 10, 2, 4]
-
-A = [[1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [-1, 0, 1, 1, -1, -1, 0, 0, 0, 0, 0, 0, 0, 0],
-     [0, -1, 0, 0, 0, 0, 1, 1, -1, -1, 0, 0, 0, 0], [0, 0, 0, -1, 1, 0, -1, 0, 0, 1, 1, -1, 0, 0],
-     [0, 0, -1, 0, 0, 0, 0, 0, 0, 0, -1, 1, 1, 0], [0, 0, 0, 0, 0, 0, 0, -1, 1, 0, 0, 0, 0, -1],
-     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -1]]
-
-b = [1, 0, 0, 0, 0, 0, -1]
-
-res = linprog(c= c, A_eq= A, b_eq= b, method= 'simplex')
-
-print(res)
