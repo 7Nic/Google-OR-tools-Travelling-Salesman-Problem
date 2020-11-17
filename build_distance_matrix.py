@@ -5,6 +5,7 @@ def distance(x1,y1,x2,y2):
   return math.sqrt((x1-x2)**2 + (y1-y2)**2)
 
 # f = open("./data/teste.tsp", "r")
+f = open("./data/qatar.tsp", "r")
 qttLines = int(f.readline())
 distances = np.zeros([qttLines,qttLines], dtype=float)
 points = []
