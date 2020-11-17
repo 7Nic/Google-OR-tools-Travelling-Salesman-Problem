@@ -1,15 +1,47 @@
 from ortools.linear_solver import pywraplp
+import numpy as np
 import itertools
+import time
+import math
+
+INF=10000000000
+
+def distance(x1,y1,x2,y2):
+  return math.sqrt((x1-x2)**2 + (y1-y2)**2)
+
+def readFile(file):
+    f = open("./data/" + file, "r")
+    qttLines = int(f.readline())
+    distances = np.zeros([qttLines,qttLines], dtype=float)
+    points = []
+    for i in range(qttLines):
+        line = f.readline()
+        (x,y) = line.split()
+        x = float(x)
+        y = float(y)
+        points.append((x,y))
+
+    for i in range(qttLines):
+        for j in range(qttLines):
+            if (i == j):
+                distances[i][j] = INF
+                continue
+
+        distances[i][j] = distance(points[i][0],points[i][1],points[j][0],points[j][1])
+
+    return distances
 
 def main():
     # Create the mip solver with the SCIP backend.
+    start_time = time.time()*1000
     solver = pywraplp.Solver.CreateSolver('SCIP')
 
-    costs = [[1000000, 100, 125, 100,75],
-    [100, 1000000, 50, 75, 125],
-    [125, 50, 1000000, 100, 125],
-    [100, 75, 100, 1000000, 50],
-    [75, 125, 125, 50, 1000000]]
+    costs = readFile('qatar.tsp')
+    # costs = [[INF, 100, 125, 100,75],
+    # [100, INF, 50, 75, 125],
+    # [125, 50, INF, 100, 125],
+    # [100, 75, 100, INF, 50],
+    # [75, 125, 125, 50, INF]]
     num_galaxies = len(costs)
 
     x = {}
@@ -32,7 +64,6 @@ def main():
         subsets = set(itertools.combinations(l,i))
         for subset in subsets:
             Q.add(subset)
-
 
     for subset in Q:
         my_sum = []
@@ -62,6 +93,8 @@ def main():
                     print('Galaxy %d to galaxy %d.  Cost = %d' %
                         (i, j, costs[i][j]))
 
+    milliseconds = time.time()*1000 - start_time
+    print("Execution time:", milliseconds, "ms")
 
 if __name__ == "__main__":
     main()
