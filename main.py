@@ -32,57 +32,50 @@ def readFile(file):
     return distances
 
 def main():
-    print("inicio")
     # Create the mip solver with the SCIP backend.
     start_time = time.time()*1000
     solver = pywraplp.Solver.CreateSolver('SCIP')
 
-    costs = readFile('qatar.tsp')
-    # costs = [[INF, 100, 125, 100,75],
-    # [100, INF, 50, 75, 125],
-    # [125, 50, INF, 100, 125],
-    # [100, 75, 100, INF, 50],
-    # [75, 125, 125, 50, INF]]
+    # costs = readFile('teste.tsp')
+    costs = [[INF, 100, 125, 100,75],
+    [100, INF, 50, 75, 125],
+    [125, 50, INF, 100, 125],
+    [100, 75, 100, INF, 50],
+    [75, 125, 125, 50, INF]]
     num_galaxies = len(costs)
 
-    print("comecando o pimeiro for")
     x = {}
     for i in range(num_galaxies):
-        print("1")
         for j in range(num_galaxies):
-            print("2")
             x[i, j] = solver.IntVar(0, 1, '')
 
     for i in range(num_galaxies):
-        print("3")
         solver.Add(solver.Sum([x[i, j] for j in range(num_galaxies)]) == 1)
-        print("4")
 
     for j in range(num_galaxies):
-        print("5")
         solver.Add(solver.Sum([x[i, j] for i in range(num_galaxies)]) == 1)
-        print("6")
 
     Q = set()
     l = list()
     for i in range(num_galaxies):
-        print("7")
         l.append(i)
 
     for i in range(2,num_galaxies):
-        print("8")
+        # print("8")
         subsets = set(itertools.combinations(l,i))
         for subset in subsets:
-            print("9")
+            # print("9")
             Q.add(subset)
 
+    print(Q)
+
     for subset in Q:
-        print("10")
+        # print("10")
         my_sum = []
         for i in subset:
-            print("11")
+            # print("11")
             for j in subset:
-                print("12")
+                # print("12")
                 if (i != j):
                     my_sum.append(x[i,j])
         solver.Add(solver.Sum(my_sum) <= len(subset) - 1)
@@ -90,16 +83,16 @@ def main():
     # Objective
     objective_terms = []
     for i in range(num_galaxies):
-        print("13")
+        # print("13")
         for j in range(num_galaxies):
-            print("14")
+            # print("14")
             objective_terms.append(costs[i][j] * x[i, j])
     solver.Minimize(solver.Sum(objective_terms))
 
     # Solve
-    print("comecando solve")
+    # print("comecando solve")
     status = solver.Solve()
-    print("terminou solve")
+    # print("terminou solve")
 
     # Print solution.
     if status == pywraplp.Solver.OPTIMAL or status == pywraplp.Solver.FEASIBLE:
