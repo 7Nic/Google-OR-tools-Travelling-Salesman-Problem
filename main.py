@@ -61,7 +61,11 @@ def main():
         solver.Add(solver.Sum([x[i, j] for i in range(num_galaxies)]) == 1)
 
     # =========
-    # Add as duas restrições
+    for i in range(1, num_galaxies):
+        solver.Add(u[i] >= 1)
+        solver.Add(u[i] <= num_galaxies-1)
+
+    
 
     # =========
 
