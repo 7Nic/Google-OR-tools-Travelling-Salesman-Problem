@@ -35,6 +35,7 @@ def main():
     # Create the mip solver with the SCIP backend.
     start_time = time.time()*1000
     solver = pywraplp.Solver.CreateSolver('SCIP')
+    INFINITY = solver.infinity()
 
     # costs = readFile('teste.tsp')
     costs = [[INF, 100, 125, 100,75],
@@ -45,7 +46,11 @@ def main():
     num_galaxies = len(costs)
 
     x = {}
+    u = {}
     for i in range(num_galaxies):
+        if (i != 0): 
+            u[i] = solver.IntVar(-INFINITY, INFINITY, '')
+
         for j in range(num_galaxies):
             x[i, j] = solver.IntVar(0, 1, '')
 
@@ -55,30 +60,10 @@ def main():
     for j in range(num_galaxies):
         solver.Add(solver.Sum([x[i, j] for i in range(num_galaxies)]) == 1)
 
-    Q = set()
-    l = list()
-    for i in range(num_galaxies):
-        l.append(i)
+    # =========
+    # Add as duas restrições
 
-    for i in range(2,num_galaxies):
-        # print("8")
-        subsets = set(itertools.combinations(l,i))
-        for subset in subsets:
-            # print("9")
-            Q.add(subset)
-
-    print(Q)
-
-    for subset in Q:
-        # print("10")
-        my_sum = []
-        for i in subset:
-            # print("11")
-            for j in subset:
-                # print("12")
-                if (i != j):
-                    my_sum.append(x[i,j])
-        solver.Add(solver.Sum(my_sum) <= len(subset) - 1)
+    # =========
 
     # Objective
     objective_terms = []
