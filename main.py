@@ -37,12 +37,12 @@ def main():
     solver = pywraplp.Solver.CreateSolver('SCIP')
     INFINITY = solver.infinity()
 
-    # costs = readFile('teste.tsp')
-    costs = [[INF, 100, 125, 100,75],
-    [100, INF, 50, 75, 125],
-    [125, 50, INF, 100, 125],
-    [100, 75, 100, INF, 50],
-    [75, 125, 125, 50, INF]]
+    costs = readFile('test.tsp')
+    # costs = [[INF, 100, 125, 100,75],
+    # [100, INF, 50, 75, 125],
+    # [125, 50, INF, 100, 125],
+    # [100, 75, 100, INF, 50],
+    # [75, 125, 125, 50, INF]]
     num_galaxies = len(costs)
 
     x = {}
@@ -71,23 +71,20 @@ def main():
     for subset in subsets:
         i = subset[0]
         j = subset[1]
-        solver.Add(u[i] - u[j] + (num_galaxies*x[i][j]) <= num_galaxies - 1)
+        solver.Add(u[i] - u[j] + (num_galaxies*x[i,j]) <= num_galaxies - 1)
+        solver.Add(u[j] - u[i] + (num_galaxies*x[j,i]) <= num_galaxies - 1) # Because j will always be greater than i
 
     # =========
 
     # Objective
     objective_terms = []
     for i in range(num_galaxies):
-        # print("13")
         for j in range(num_galaxies):
-            # print("14")
             objective_terms.append(costs[i][j] * x[i, j])
     solver.Minimize(solver.Sum(objective_terms))
 
     # Solve
-    # print("comecando solve")
     status = solver.Solve()
-    # print("terminou solve")
 
     # Print solution.
     if status == pywraplp.Solver.OPTIMAL or status == pywraplp.Solver.FEASIBLE:
