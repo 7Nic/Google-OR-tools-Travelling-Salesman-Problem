@@ -61,11 +61,17 @@ def main():
         solver.Add(solver.Sum([x[i, j] for i in range(num_galaxies)]) == 1)
 
     # =========
+    l = list()
     for i in range(1, num_galaxies):
+        l.append(i)
         solver.Add(u[i] >= 1)
         solver.Add(u[i] <= num_galaxies-1)
 
-    
+    subsets = set(itertools.combinations(l,2))
+    for subset in subsets:
+        i = subset[0]
+        j = subset[1]
+        solver.Add(u[i] - u[j] + (num_galaxies*x[i][j]) <= num_galaxies - 1)
 
     # =========
 
