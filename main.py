@@ -60,6 +60,7 @@ def main():
     for i in range(num_galaxies):
         l.append(i)
 
+    # Acho que isso está errado, nossa contagem começa no 0 e vai até n-1, então acho que aqui deveria ser range(1,num_galaxies):
     for i in range(2,num_galaxies):
         # print("8")
         subsets = set(itertools.combinations(l,i))
