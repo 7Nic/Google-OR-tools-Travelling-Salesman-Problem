@@ -37,7 +37,7 @@ def main():
     solver = pywraplp.Solver.CreateSolver('SCIP')
     INFINITY = solver.infinity()
 
-    costs = readFile('test.tsp')
+    costs = readFile('qatar.tsp')
     # costs = [[INF, 100, 125, 100,75],
     # [100, INF, 50, 75, 125],
     # [125, 50, INF, 100, 125],
@@ -73,6 +73,7 @@ def main():
         j = subset[1]
         solver.Add(u[i] - u[j] + (num_galaxies*x[i,j]) <= num_galaxies - 1)
         solver.Add(u[j] - u[i] + (num_galaxies*x[j,i]) <= num_galaxies - 1) # Because j will always be greater than i
+    
 
     # =========
 
@@ -85,6 +86,7 @@ def main():
 
     # Solve
     status = solver.Solve()
+    print('Acabou de resolver')
 
     # Print solution.
     if status == pywraplp.Solver.OPTIMAL or status == pywraplp.Solver.FEASIBLE:
