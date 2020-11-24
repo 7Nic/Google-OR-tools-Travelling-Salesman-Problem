@@ -1,3 +1,5 @@
+# CLP_LINEAR_PROGRAMMING or CLP - CBC_MIXED_INTEGER_PROGRAMMING or CBC - GLOP_LINEAR_PROGRAMMING or GLOP - BOP_INTEGER_PROGRAMMING or BOP - SAT_INTEGER_PROGRAMMING or SAT or CP_SAT - SCIP_MIXED_INTEGER_PROGRAMMING or SCIP - GUROBI_LINEAR_PROGRAMMING or GUROBI_LP - GUROBI_MIXED_INTEGER_PROGRAMMING or GUROBI or GUROBI_MIP - CPLEX_LINEAR_PROGRAMMING or CPLEX_LP - CPLEX_MIXED_INTEGER_PROGRAMMING or CPLEX or CPLEX_MIP - XPRESS_LINEAR_PROGRAMMING or XPRESS_LP - XPRESS_MIXED_INTEGER_PROGRAMMING or XPRESS or XPRESS_MIP - GLPK_LINEAR_PROGRAMMING or GLPK_LP - GLPK_MIXED_INTEGER_PROGRAMMING or GLPK or GLPK_MIP
+# https://goohttps://developers.google.com/optimization/mip/integer_optgle.github.io/or-tools/python/ortools/linear_solver/pywraplp.html
 from ortools.linear_solver import pywraplp
 import numpy as np
 import itertools
@@ -32,20 +34,25 @@ def readFile(file):
     return distances
 
 def main():
-    # Create the mip solver with the SCIP backend.
     start_time = time.time()*1000
-    solver = pywraplp.Solver.CreateSolver('SCIP')
+    solver = pywraplp.Solver.CreateSolver('CPLEX')
+    
+    INFINITY = solver.infinity()
 
-    # costs = readFile('teste.tsp')
-    costs = [[INF, 100, 125, 100,75],
-    [100, INF, 50, 75, 125],
-    [125, 50, INF, 100, 125],
-    [100, 75, 100, INF, 50],
-    [75, 125, 125, 50, INF]]
+    costs = readFile('qatar.tsp')
+    # costs = [[INF, 100, 125, 100,75],
+    # [100, INF, 50, 75, 125],
+    # [125, 50, INF, 100, 125],
+    # [100, 75, 100, INF, 50],
+    # [75, 125, 125, 50, INF]]
     num_galaxies = len(costs)
 
     x = {}
+    u = {}
     for i in range(num_galaxies):
+        if (i != 0): 
+            u[i] = solver.IntVar(-INFINITY, INFINITY, '')
+
         for j in range(num_galaxies):
             x[i, j] = solver.IntVar(0, 1, '')
 
@@ -55,45 +62,33 @@ def main():
     for j in range(num_galaxies):
         solver.Add(solver.Sum([x[i, j] for i in range(num_galaxies)]) == 1)
 
-    Q = set()
+    # =========
     l = list()
-    for i in range(num_galaxies):
+    for i in range(1, num_galaxies):
         l.append(i)
+        solver.Add(u[i] >= 1)
+        solver.Add(u[i] <= num_galaxies-1)
 
-    # Acho que isso está errado, nossa contagem começa no 0 e vai até n-1, então acho que aqui deveria ser range(1,num_galaxies):
-    for i in range(2,num_galaxies):
-        # print("8")
-        subsets = set(itertools.combinations(l,i))
-        for subset in subsets:
-            # print("9")
-            Q.add(subset)
+    subsets = set(itertools.combinations(l,2))
+    for subset in subsets:
+        i = subset[0]
+        j = subset[1]
+        solver.Add(u[i] - u[j] + (num_galaxies*x[i,j]) <= num_galaxies - 1)
+        solver.Add(u[j] - u[i] + (num_galaxies*x[j,i]) <= num_galaxies - 1) # Because j will always be greater than i
+    
 
-    print(Q)
-
-    for subset in Q:
-        # print("10")
-        my_sum = []
-        for i in subset:
-            # print("11")
-            for j in subset:
-                # print("12")
-                if (i != j):
-                    my_sum.append(x[i,j])
-        solver.Add(solver.Sum(my_sum) <= len(subset) - 1)
+    # =========
 
     # Objective
     objective_terms = []
     for i in range(num_galaxies):
-        # print("13")
         for j in range(num_galaxies):
-            # print("14")
             objective_terms.append(costs[i][j] * x[i, j])
     solver.Minimize(solver.Sum(objective_terms))
 
     # Solve
-    # print("comecando solve")
     status = solver.Solve()
-    # print("terminou solve")
+    print('Acabou de resolver')
 
     # Print solution.
     if status == pywraplp.Solver.OPTIMAL or status == pywraplp.Solver.FEASIBLE:
@@ -106,7 +101,12 @@ def main():
                         (i, j, costs[i][j]))
 
     milliseconds = time.time()*1000 - start_time
-    print("Execution time:", milliseconds, "ms")
+    print("Execution time:", milliseconds/1000, "s")
 
 if __name__ == "__main__":
     main()
+
+# Aqui
+# https://developers.google.com/optimization
+# https://google.github.io/or-tools/python/ortools/linear_solver/pywraplp.html
+# https://developers.google.com/optimization/mip/integer_opt
