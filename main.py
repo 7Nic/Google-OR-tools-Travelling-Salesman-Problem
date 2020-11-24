@@ -99,7 +99,7 @@ def main():
                         (i, j, costs[i][j]))
 
     milliseconds = time.time()*1000 - start_time
-    print("Execution time:", milliseconds, "ms")
+    print("Execution time:", milliseconds/1000, "s")
 
 if __name__ == "__main__":
     main()
