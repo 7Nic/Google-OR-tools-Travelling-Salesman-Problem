@@ -1,3 +1,5 @@
+# CLP_LINEAR_PROGRAMMING or CLP - CBC_MIXED_INTEGER_PROGRAMMING or CBC - GLOP_LINEAR_PROGRAMMING or GLOP - BOP_INTEGER_PROGRAMMING or BOP - SAT_INTEGER_PROGRAMMING or SAT or CP_SAT - SCIP_MIXED_INTEGER_PROGRAMMING or SCIP - GUROBI_LINEAR_PROGRAMMING or GUROBI_LP - GUROBI_MIXED_INTEGER_PROGRAMMING or GUROBI or GUROBI_MIP - CPLEX_LINEAR_PROGRAMMING or CPLEX_LP - CPLEX_MIXED_INTEGER_PROGRAMMING or CPLEX or CPLEX_MIP - XPRESS_LINEAR_PROGRAMMING or XPRESS_LP - XPRESS_MIXED_INTEGER_PROGRAMMING or XPRESS or XPRESS_MIP - GLPK_LINEAR_PROGRAMMING or GLPK_LP - GLPK_MIXED_INTEGER_PROGRAMMING or GLPK or GLPK_MIP
+# https://google.github.io/or-tools/python/ortools/linear_solver/pywraplp.html
 from ortools.linear_solver import pywraplp
 import numpy as np
 import itertools
@@ -32,9 +34,9 @@ def readFile(file):
     return distances
 
 def main():
-    # Create the mip solver with the SCIP backend.
     start_time = time.time()*1000
-    solver = pywraplp.Solver.CreateSolver('SCIP')
+    solver = pywraplp.Solver.CreateSolver('CPLEX')
+    
     INFINITY = solver.infinity()
 
     costs = readFile('qatar.tsp')
@@ -103,3 +105,8 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+# Aqui
+# https://developers.google.com/optimization
+# https://google.github.io/or-tools/python/ortools/linear_solver/pywraplp.html
+# https://developers.google.com/optimization/mip/integer_opt
