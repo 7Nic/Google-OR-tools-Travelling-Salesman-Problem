@@ -98,11 +98,11 @@ def main():
 
     # Solve
     print("Iniciando a resolução")
-    minutes = 3*60*1000
+    minutes = 10*60*1000
     seconds = 20*1000
     solver.set_time_limit(seconds) # Time in ms
     status = solver.Solve()
-    # print('Acabou de resolver', pywraplp.Solver.OPTIMAL.DUAL)
+    # print('Acabou de resolver',  _pywraplp.MPSolverParameters_RELATIVE_MIP_GAP)
     print('Acabou de resolver')
 
     # Print solution.
@@ -121,8 +121,11 @@ def main():
 if __name__ == "__main__":
     main()
 
-# Aqui
 # https://developers.google.com/optimization
 # https://google.github.io/or-tools/python/ortools/linear_solver/pywraplp.html
 # https://developers.google.com/optimization/mip/integer_opt
 # https://www.scipopt.org/doc/html/
+
+# Podemos fazer o modelo aqui em python e exportar em formato .lp para rodar no programa do SCIP: ExportModelAsLpFormat - https://developers.google.com/optimization/reference/python/linear_solver/pywraplp
+
+# Em qualquer tempo de resolução é retornado 39661
