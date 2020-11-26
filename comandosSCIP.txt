@@ -1,4 +1,4 @@
 read /path/to/file
-set limits time 180 #tempos em segundos
+set limits time 180 #tempo em segundos
 optimize
 display solution
