@@ -2,3 +2,4 @@ read /path/to/file
 set limits time 180 #tempo em segundos
 optimize
 display solution
+display heuristics # Displaying detailed solving statistics
