@@ -11,6 +11,7 @@ INF=10000000000
 def distance(x1,y1,x2,y2):
   return math.sqrt((x1-x2)**2 + (y1-y2)**2)
 
+# Calculate distances
 def readFile(file):
     f = open("./data/" + file, "r")
     qttLines = int(f.readline())
@@ -28,7 +29,6 @@ def readFile(file):
             if (i == j):
                 distances[i][j] = INF
                 continue
-
             distances[i][j] = distance(points[i][0],points[i][1],points[j][0],points[j][1])
 
     return distances
@@ -45,7 +45,6 @@ def main():
     # [125, 50, INF, 100, 125],
     # [100, 75, 100, INF, 50],
     # [75, 125, 125, 50, INF]]
-    print(f"olha só {costs[129][130]}")
     num_galaxies = len(costs)
 
     x = {}
