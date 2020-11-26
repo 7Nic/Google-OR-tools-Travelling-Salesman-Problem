@@ -97,6 +97,14 @@ def main():
     solver.Minimize(solver.Sum(objective_terms))
 
     # Solve
+    print("Exportando modelo...")
+    model = solver.ExportModelAsLpFormat(True)
+    f = open(r"./model_tsp.lp","w+") 
+    f.write(model)
+    f.close()
+    return
+
+
     print("Iniciando a resolução")
     minutes = 10*60*1000
     seconds = 20*1000
@@ -127,5 +135,3 @@ if __name__ == "__main__":
 # https://www.scipopt.org/doc/html/
 
 # Podemos fazer o modelo aqui em python e exportar em formato .lp para rodar no programa do SCIP: ExportModelAsLpFormat - https://developers.google.com/optimization/reference/python/linear_solver/pywraplp
-
-# Em qualquer tempo de resolução é retornado 39661
