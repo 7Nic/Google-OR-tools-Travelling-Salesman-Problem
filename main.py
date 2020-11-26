@@ -11,6 +11,7 @@ INF=10000000000
 def distance(x1,y1,x2,y2):
   return math.sqrt((x1-x2)**2 + (y1-y2)**2)
 
+# Calculate distances
 def readFile(file):
     f = open("./data/" + file, "r")
     qttLines = int(f.readline())
@@ -28,14 +29,13 @@ def readFile(file):
             if (i == j):
                 distances[i][j] = INF
                 continue
-
-        distances[i][j] = distance(points[i][0],points[i][1],points[j][0],points[j][1])
+            distances[i][j] = distance(points[i][0],points[i][1],points[j][0],points[j][1])
 
     return distances
 
 def main():
     start_time = time.time()*1000
-    solver = pywraplp.Solver.CreateSolver('CPLEX')
+    solver = pywraplp.Solver.CreateSolver('SCIP')
     
     INFINITY = solver.infinity()
 
@@ -57,10 +57,20 @@ def main():
             x[i, j] = solver.IntVar(0, 1, '')
 
     for i in range(num_galaxies):
-        solver.Add(solver.Sum([x[i, j] for j in range(num_galaxies)]) == 1)
+        list1 = []
+        for j in range(num_galaxies):
+            if (i != j): list1.append(x[i, j])
+        solver.Add(solver.Sum(list1) == 1)
 
     for j in range(num_galaxies):
-        solver.Add(solver.Sum([x[i, j] for i in range(num_galaxies)]) == 1)
+        list2 = []
+        for i in range(num_galaxies):
+            if (i != j): list2.append(x[i, j])
+        solver.Add(solver.Sum(list2) == 1)
+
+
+    # for j in range(num_galaxies):
+    #     solver.Add(solver.Sum([x[i, j] for i in range(num_galaxies)]) == 1)
 
     # =========
     l = list()
@@ -87,7 +97,20 @@ def main():
     solver.Minimize(solver.Sum(objective_terms))
 
     # Solve
+    print("Exportando modelo...")
+    model = solver.ExportModelAsLpFormat(True)
+    f = open(r"./model_tsp.lp","w+") 
+    f.write(model)
+    f.close()
+    return
+
+
+    print("Iniciando a resolução")
+    minutes = 10*60*1000
+    seconds = 20*1000
+    solver.set_time_limit(seconds) # Time in ms
     status = solver.Solve()
+    # print('Acabou de resolver',  _pywraplp.MPSolverParameters_RELATIVE_MIP_GAP)
     print('Acabou de resolver')
 
     # Print solution.
@@ -106,7 +129,9 @@ def main():
 if __name__ == "__main__":
     main()
 
-# Aqui
 # https://developers.google.com/optimization
 # https://google.github.io/or-tools/python/ortools/linear_solver/pywraplp.html
 # https://developers.google.com/optimization/mip/integer_opt
+# https://www.scipopt.org/doc/html/
+
+# Podemos fazer o modelo aqui em python e exportar em formato .lp para rodar no programa do SCIP: ExportModelAsLpFormat - https://developers.google.com/optimization/reference/python/linear_solver/pywraplp
