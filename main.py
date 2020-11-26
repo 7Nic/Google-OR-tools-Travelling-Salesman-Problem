@@ -29,13 +29,13 @@ def readFile(file):
                 distances[i][j] = INF
                 continue
 
-        distances[i][j] = distance(points[i][0],points[i][1],points[j][0],points[j][1])
+            distances[i][j] = distance(points[i][0],points[i][1],points[j][0],points[j][1])
 
     return distances
 
 def main():
     start_time = time.time()*1000
-    solver = pywraplp.Solver.CreateSolver('CPLEX')
+    solver = pywraplp.Solver.CreateSolver('SCIP')
     
     INFINITY = solver.infinity()
 
@@ -45,6 +45,7 @@ def main():
     # [125, 50, INF, 100, 125],
     # [100, 75, 100, INF, 50],
     # [75, 125, 125, 50, INF]]
+    print(f"olha só {costs[129][130]}")
     num_galaxies = len(costs)
 
     x = {}
@@ -57,10 +58,20 @@ def main():
             x[i, j] = solver.IntVar(0, 1, '')
 
     for i in range(num_galaxies):
-        solver.Add(solver.Sum([x[i, j] for j in range(num_galaxies)]) == 1)
+        list1 = []
+        for j in range(num_galaxies):
+            if (i != j): list1.append(x[i, j])
+        solver.Add(solver.Sum(list1) == 1)
 
     for j in range(num_galaxies):
-        solver.Add(solver.Sum([x[i, j] for i in range(num_galaxies)]) == 1)
+        list2 = []
+        for i in range(num_galaxies):
+            if (i != j): list2.append(x[i, j])
+        solver.Add(solver.Sum(list2) == 1)
+
+
+    # for j in range(num_galaxies):
+    #     solver.Add(solver.Sum([x[i, j] for i in range(num_galaxies)]) == 1)
 
     # =========
     l = list()
@@ -87,7 +98,12 @@ def main():
     solver.Minimize(solver.Sum(objective_terms))
 
     # Solve
+    print("Iniciando a resolução")
+    minutes = 3*60*1000
+    seconds = 20*1000
+    solver.set_time_limit(seconds) # Time in ms
     status = solver.Solve()
+    # print('Acabou de resolver', pywraplp.Solver.OPTIMAL.DUAL)
     print('Acabou de resolver')
 
     # Print solution.
@@ -110,3 +126,4 @@ if __name__ == "__main__":
 # https://developers.google.com/optimization
 # https://google.github.io/or-tools/python/ortools/linear_solver/pywraplp.html
 # https://developers.google.com/optimization/mip/integer_opt
+# https://www.scipopt.org/doc/html/
