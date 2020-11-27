@@ -1,3 +1,6 @@
+# Miller tuker zemlim formulation
+
+
 # CLP_LINEAR_PROGRAMMING or CLP - CBC_MIXED_INTEGER_PROGRAMMING or CBC - GLOP_LINEAR_PROGRAMMING or GLOP - BOP_INTEGER_PROGRAMMING or BOP - SAT_INTEGER_PROGRAMMING or SAT or CP_SAT - SCIP_MIXED_INTEGER_PROGRAMMING or SCIP - GUROBI_LINEAR_PROGRAMMING or GUROBI_LP - GUROBI_MIXED_INTEGER_PROGRAMMING or GUROBI or GUROBI_MIP - CPLEX_LINEAR_PROGRAMMING or CPLEX_LP - CPLEX_MIXED_INTEGER_PROGRAMMING or CPLEX or CPLEX_MIP - XPRESS_LINEAR_PROGRAMMING or XPRESS_LP - XPRESS_MIXED_INTEGER_PROGRAMMING or XPRESS or XPRESS_MIP - GLPK_LINEAR_PROGRAMMING or GLPK_LP - GLPK_MIXED_INTEGER_PROGRAMMING or GLPK or GLPK_MIP
 # https://goohttps://developers.google.com/optimization/mip/integer_optgle.github.io/or-tools/python/ortools/linear_solver/pywraplp.html
 from ortools.linear_solver import pywraplp
@@ -39,7 +42,8 @@ def main():
     
     INFINITY = solver.infinity()
 
-    costs = readFile('qatar.tsp')
+
+    costs = readFile('djibouti.tsp')
     # costs = [[INF, 100, 125, 100,75],
     # [100, INF, 50, 75, 125],
     # [125, 50, INF, 100, 125],
@@ -86,9 +90,6 @@ def main():
         solver.Add(u[i] - u[j] + (num_galaxies*x[i,j]) <= num_galaxies - 1)
         solver.Add(u[j] - u[i] + (num_galaxies*x[j,i]) <= num_galaxies - 1) # Because j will always be greater than i
     
-
-    # =========
-
     # Objective
     objective_terms = []
     for i in range(num_galaxies):
@@ -96,15 +97,15 @@ def main():
             objective_terms.append(costs[i][j] * x[i, j])
     solver.Minimize(solver.Sum(objective_terms))
 
-    # Solve
+    # Exportar modelo
     print("Exportando modelo...")
     model = solver.ExportModelAsLpFormat(True)
-    f = open(r"./model_tsp.lp","w+") 
+    f = open(r"./djibouti.lp","w+") 
     f.write(model)
     f.close()
     return
 
-
+    # Solve
     print("Iniciando a resolução")
     minutes = 10*60*1000
     seconds = 20*1000
@@ -135,3 +136,6 @@ if __name__ == "__main__":
 # https://www.scipopt.org/doc/html/
 
 # Podemos fazer o modelo aqui em python e exportar em formato .lp para rodar no programa do SCIP: ExportModelAsLpFormat - https://developers.google.com/optimization/reference/python/linear_solver/pywraplp
+
+# Para poder usar o SCIP pelo shell
+# https://www.scipopt.org/doc/html/SHELL.php
