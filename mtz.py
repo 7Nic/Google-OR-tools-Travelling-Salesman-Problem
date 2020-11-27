@@ -1,8 +1,4 @@
 # Miller tuker zemlim formulation
-
-
-# CLP_LINEAR_PROGRAMMING or CLP - CBC_MIXED_INTEGER_PROGRAMMING or CBC - GLOP_LINEAR_PROGRAMMING or GLOP - BOP_INTEGER_PROGRAMMING or BOP - SAT_INTEGER_PROGRAMMING or SAT or CP_SAT - SCIP_MIXED_INTEGER_PROGRAMMING or SCIP - GUROBI_LINEAR_PROGRAMMING or GUROBI_LP - GUROBI_MIXED_INTEGER_PROGRAMMING or GUROBI or GUROBI_MIP - CPLEX_LINEAR_PROGRAMMING or CPLEX_LP - CPLEX_MIXED_INTEGER_PROGRAMMING or CPLEX or CPLEX_MIP - XPRESS_LINEAR_PROGRAMMING or XPRESS_LP - XPRESS_MIXED_INTEGER_PROGRAMMING or XPRESS or XPRESS_MIP - GLPK_LINEAR_PROGRAMMING or GLPK_LP - GLPK_MIXED_INTEGER_PROGRAMMING or GLPK or GLPK_MIP
-# https://goohttps://developers.google.com/optimization/mip/integer_optgle.github.io/or-tools/python/ortools/linear_solver/pywraplp.html
 from ortools.linear_solver import pywraplp
 import numpy as np
 import itertools
@@ -96,20 +92,19 @@ def main():
     solver.Minimize(solver.Sum(objective_terms))
 
     # Exportar modelo
-    print("Exportando modelo...")
-    model = solver.ExportModelAsLpFormat(True)
-    f = open(r"./qatar_mtz.lp","w+") 
-    f.write(model)
-    f.close()
-    return
+    # print("Exportando modelo...")
+    # model = solver.ExportModelAsLpFormat(True)
+    # f = open(r"./qatar_mtz.lp","w+") 
+    # f.write(model)
+    # f.close()
+    # return
 
     # Solve
-    print("Iniciando a resolução")
+    print("Iniciando a resolução...")
     minutes = 10*60*1000
     seconds = 20*1000
-    solver.set_time_limit(seconds) # Time in ms
+    solver.set_time_limit(minutes) # Time in ms
     status = solver.Solve()
-    # print('Acabou de resolver',  _pywraplp.MPSolverParameters_RELATIVE_MIP_GAP)
     print('Acabou de resolver')
 
     # Print solution.
@@ -127,13 +122,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-# https://developers.google.com/optimization
-# https://google.github.io/or-tools/python/ortools/linear_solver/pywraplp.html
-# https://developers.google.com/optimization/mip/integer_opt
-# https://www.scipopt.org/doc/html/
-
-# Podemos fazer o modelo aqui em python e exportar em formato .lp para rodar no programa do SCIP: ExportModelAsLpFormat - https://developers.google.com/optimization/reference/python/linear_solver/pywraplp
-
-# Para poder usar o SCIP pelo shell
-# https://www.scipopt.org/doc/html/SHELL.php
