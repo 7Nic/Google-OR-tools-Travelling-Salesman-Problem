@@ -1,5 +1,3 @@
-# Tentar primeiro o DL, se nao der certo tentar o SD
-
 # Sherali and driscoll formulation
 from ortools.linear_solver import pywraplp
 import numpy as np
@@ -59,6 +57,7 @@ def main():
 
     for j in range(num_galaxies):
       x[i, j] = solver.IntVar(0, 1, '')
+      y[i, j] = solver.IntVar(0, 1, '')
 
   # Adding constraints
   for i in range(num_galaxies):
@@ -73,44 +72,75 @@ def main():
       if (i != j): list2.append(x[i, j])
     solver.Add(solver.Sum(list2) == 1)
 
-  # Subtour elimination
-  # MTZ
-  # l = list()
+  # DL
+  # node_list = list()
   # for i in range(1, num_galaxies):
-  #   l.append(i)
-  #   solver.Add(u[i] >= 1)
-  #   solver.Add(u[i] <= num_galaxies-1)
+  #   node_list.append(i)
+  #   list1 = list()
+  #   list2 = list()
+  #   for j in range(1, num_galaxies):
+  #     list1.append(x[j, i])
+  #     list2.append(x[i, j])
+    
+  #   solver.Add(1 + (num_galaxies-3)*x[i, 1] + solver.Sum(list1) <= u[i])
+  #   solver.Add(u[i] <= num_galaxies - 1 - (num_galaxies-3)*x[1,i] - solver.Sum(list2))
 
-  # subsets = set(itertools.combinations(l,2))
+  # subsets = set(itertools.combinations(node_list,2))
   # for subset in subsets:
   #   i = subset[0]
   #   j = subset[1]
-  #   solver.Add(u[i] - u[j] + (num_galaxies*x[i,j]) <= num_galaxies - 1)
-  #   solver.Add(u[j] - u[i] + (num_galaxies*x[j,i]) <= num_galaxies - 1) # Because j will always be greater than i using itertools
+  #   solver.Add(u[i] - u[j] + (num_galaxies-1)*x[i, j] + (num_galaxies-3)*x[j, i] <= num_galaxies - 2) 
 
-  # DL
+  #   # Itertools always give subset[1] greater than subset[0]
+  #   i = subset[1]
+  #   j = subset[0]
+  #   solver.Add(u[i] - u[j] + (num_galaxies-1)*x[i, j] + (num_galaxies-3)*x[j, i] <= num_galaxies - 2) 
+
+  # Subtour elimination with SD
+  n = num_galaxies
+  # (13)
   node_list = list()
-  for i in range(1, num_galaxies):
+  list1 = list()
+  for i in range(1, n):
     node_list.append(i)
-    list1 = list()
-    list2 = list()
-    for j in range(1, num_galaxies):
-      list1.append(x[j, i])
-      list2.append(x[i, j])
-    
-    solver.Add(1 + (num_galaxies-3)*x[i, 1] + solver.Sum(list1) <= u[i])
-    solver.Add(u[i] <= num_galaxies - 1 - (num_galaxies-3)*x[1,i] - solver.Sum(list2))
+    for j in range(1, n):
+      list1.append(y[i, j])
 
+    solver.Add(solver.Sum(list1) + (n-1)*x[i, 1] == u[i])
+
+  # (14)
+  list2 = list()
+  for j in range(1, n):
+    for i in range(1, n):
+      list2.append(y[i, j])
+
+    solver.Add(solver.Sum(list2) + 1 == u[j])
+
+  # (15) and (16)
   subsets = set(itertools.combinations(node_list,2))
   for subset in subsets:
+    # (15)    
     i = subset[0]
     j = subset[1]
-    solver.Add(u[i] - u[j] + (num_galaxies-1)*x[i, j] + (num_galaxies-3)*x[j, i] <= num_galaxies - 2) 
+    solver.Add(x[i,j] <= y[i,j] <= (n-2)*x[i,j])
 
-    # Itertools always give subset[1] greater than subset[0]
     i = subset[1]
     j = subset[0]
-    solver.Add(u[i] - u[j] + (num_galaxies-1)*x[i, j] + (num_galaxies-3)*x[j, i] <= num_galaxies - 2) 
+    solver.Add(x[i,j] <= y[i,j] <= (n-2)*x[i,j])
+
+    # (16)
+    i = subset[0]
+    j = subset[1]
+    solver.Add(u[j] + (n-2)*x[i,j] - (n-1)*(1-x[j,i] <= y[i,j] + y[j,i] <= u[j] - (1-x[j,i])))
+
+    i = subset[1]
+    j = subset[0]
+    solver.Add(u[j] + (n-2)*x[i,j] - (n-1)*(1-x[j,i] <= y[i,j] + y[j,i] <= u[j] - (1-x[j,i])))
+
+  # (17)
+  for j in range(1, n):
+    solver.Add(1 + (1-x[1,j]) + (n-3)*x[j,1] <= u[j] <= (n-1) - (n-3)*x[1,j] - (1 - x[j,1]))
+
   
   # Objective
   objective_terms = []

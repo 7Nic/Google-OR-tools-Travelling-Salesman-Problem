@@ -1,5 +1,3 @@
-# Tentar primeiro o DL, se nao der certo tentar o SD
-
 # Sherali and driscoll formulation
 from ortools.linear_solver import pywraplp
 import numpy as np
@@ -49,16 +47,15 @@ def main():
 
   # Model
   x = {}
-  y = {}
   u = {}
 
   # Creating variables
   for i in range(num_galaxies):
     if (i != 0): 
-      u[i] = solver.IntVar(-INFINITY, INFINITY, '')
+      u[i] = solver.IntVar(-INFINITY, INFINITY, '') # Integer
 
     for j in range(num_galaxies):
-      x[i, j] = solver.IntVar(0, 1, '')
+      x[i, j] = solver.IntVar(0, 1, '') # Integer
 
   # Adding initial constraints
   for i in range(num_galaxies):
@@ -105,12 +102,12 @@ def main():
   solver.Minimize(solver.Sum(objective_terms))
 
   # Exporting model
-  print("Exportando modelo...")
-  model = solver.ExportModelAsLpFormat(True)
-  f = open(r"./qatar_dl.lp","w+") 
-  f.write(model)
-  f.close()
-  return
+  # print("Exportando modelo...")
+  # model = solver.ExportModelAsLpFormat(True)
+  # f = open(r"./qatar_dl.lp","w+") 
+  # f.write(model)
+  # f.close()
+  # return
 
   # Solving
   print("Starting...")

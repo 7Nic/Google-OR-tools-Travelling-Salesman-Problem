@@ -77,13 +77,17 @@ def main():
     #     solver.Add(solver.Sum([x[i, j] for i in range(num_galaxies)]) == 1)
 
     # =========
-    l = list()
+    
     for i in range(1, num_galaxies):
-        l.append(i)
         solver.Add(u[i] >= 1)
         solver.Add(u[i] <= num_galaxies-1)
 
-    subsets = set(itertools.combinations(l,2))
+
+    node_list = list()
+    for i in range(1, num_galaxies):
+        node_list.append(i)        
+
+    subsets = set(itertools.combinations(node_list,2))
     for subset in subsets:
         i = subset[0]
         j = subset[1]
@@ -98,12 +102,12 @@ def main():
     solver.Minimize(solver.Sum(objective_terms))
 
     # Exportar modelo
-    print("Exportando modelo...")
-    model = solver.ExportModelAsLpFormat(True)
-    f = open(r"./djibouti.lp","w+") 
-    f.write(model)
-    f.close()
-    return
+    # print("Exportando modelo...")
+    # model = solver.ExportModelAsLpFormat(True)
+    # f = open(r"./djibouti.lp","w+") 
+    # f.write(model)
+    # f.close()
+    # return
 
     # Solve
     print("Iniciando a resolução")
