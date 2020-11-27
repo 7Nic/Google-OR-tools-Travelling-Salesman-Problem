@@ -1,3 +1,6 @@
+# Miller tuker zemlim formulation
+
+
 # CLP_LINEAR_PROGRAMMING or CLP - CBC_MIXED_INTEGER_PROGRAMMING or CBC - GLOP_LINEAR_PROGRAMMING or GLOP - BOP_INTEGER_PROGRAMMING or BOP - SAT_INTEGER_PROGRAMMING or SAT or CP_SAT - SCIP_MIXED_INTEGER_PROGRAMMING or SCIP - GUROBI_LINEAR_PROGRAMMING or GUROBI_LP - GUROBI_MIXED_INTEGER_PROGRAMMING or GUROBI or GUROBI_MIP - CPLEX_LINEAR_PROGRAMMING or CPLEX_LP - CPLEX_MIXED_INTEGER_PROGRAMMING or CPLEX or CPLEX_MIP - XPRESS_LINEAR_PROGRAMMING or XPRESS_LP - XPRESS_MIXED_INTEGER_PROGRAMMING or XPRESS or XPRESS_MIP - GLPK_LINEAR_PROGRAMMING or GLPK_LP - GLPK_MIXED_INTEGER_PROGRAMMING or GLPK or GLPK_MIP
 # https://goohttps://developers.google.com/optimization/mip/integer_optgle.github.io/or-tools/python/ortools/linear_solver/pywraplp.html
 from ortools.linear_solver import pywraplp
@@ -40,7 +43,7 @@ def main():
     INFINITY = solver.infinity()
 
 
-    costs = readFile('uruguay.tsp')
+    costs = readFile('djibouti.tsp')
     # costs = [[INF, 100, 125, 100,75],
     # [100, INF, 50, 75, 125],
     # [125, 50, INF, 100, 125],
@@ -97,7 +100,7 @@ def main():
     # Exportar modelo
     print("Exportando modelo...")
     model = solver.ExportModelAsLpFormat(True)
-    f = open(r"./uruguay.lp","w+") 
+    f = open(r"./djibouti.lp","w+") 
     f.write(model)
     f.close()
     return
