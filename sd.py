@@ -39,14 +39,13 @@ def main():
   solver = pywraplp.Solver.CreateSolver('SCIP')
   INFINITY = solver.infinity()
 
-  costs = readFile('djibouti.tsp')
+  costs = readFile('qatar.tsp')
   # costs = [[INF, 100, 125, 100,75],
   # [100, INF, 50, 75, 125],
   # [125, 50, INF, 100, 125],
   # [100, 75, 100, INF, 50],
   # [75, 125, 125, 50, INF]]
   num_galaxies = len(costs)
-
 
   # Model
   x = {}
@@ -75,18 +74,43 @@ def main():
     solver.Add(solver.Sum(list2) == 1)
 
   # Subtour elimination
-  l = list()
-  for i in range(1, num_galaxies):
-    l.append(i)
-    solver.Add(u[i] >= 1)
-    solver.Add(u[i] <= num_galaxies-1)
+  # MTZ
+  # l = list()
+  # for i in range(1, num_galaxies):
+  #   l.append(i)
+  #   solver.Add(u[i] >= 1)
+  #   solver.Add(u[i] <= num_galaxies-1)
 
-  subsets = set(itertools.combinations(l,2))
+  # subsets = set(itertools.combinations(l,2))
+  # for subset in subsets:
+  #   i = subset[0]
+  #   j = subset[1]
+  #   solver.Add(u[i] - u[j] + (num_galaxies*x[i,j]) <= num_galaxies - 1)
+  #   solver.Add(u[j] - u[i] + (num_galaxies*x[j,i]) <= num_galaxies - 1) # Because j will always be greater than i using itertools
+
+  # DL
+  node_list = list()
+  for i in range(1, num_galaxies):
+    node_list.append(i)
+    list1 = list()
+    list2 = list()
+    for j in range(1, num_galaxies):
+      list1.append(x[j, i])
+      list2.append(x[i, j])
+    
+    solver.Add(1 + (num_galaxies-3)*x[i, 1] + solver.Sum(list1) <= u[i])
+    solver.Add(u[i] <= num_galaxies - 1 - (num_galaxies-3)*x[1,i] - solver.Sum(list2))
+
+  subsets = set(itertools.combinations(node_list,2))
   for subset in subsets:
     i = subset[0]
     j = subset[1]
-    solver.Add(u[i] - u[j] + (num_galaxies*x[i,j]) <= num_galaxies - 1)
-    solver.Add(u[j] - u[i] + (num_galaxies*x[j,i]) <= num_galaxies - 1) # Because j will always be greater than i
+    solver.Add(u[i] - u[j] + (num_galaxies-1)*x[i, j] + (num_galaxies-3)*x[j, i] <= num_galaxies - 2) 
+
+    # Itertools always give subset[1] greater than subset[0]
+    i = subset[1]
+    j = subset[0]
+    solver.Add(u[i] - u[j] + (num_galaxies-1)*x[i, j] + (num_galaxies-3)*x[j, i] <= num_galaxies - 2) 
   
   # Objective
   objective_terms = []
@@ -98,7 +122,7 @@ def main():
   # Exporting model
   print("Exportando modelo...")
   model = solver.ExportModelAsLpFormat(True)
-  f = open(r"./djibouti.lp","w+") 
+  f = open(r"./qatar_dl.lp","w+") 
   f.write(model)
   f.close()
   return
