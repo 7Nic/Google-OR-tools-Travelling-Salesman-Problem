@@ -1,7 +1,15 @@
 read /path/to/file
 set limits time 180 #tempo em segundos
+set emphasis feasibility
 optimize
 display solution
 display statistics
 display heuristics # Displaying detailed solving statistics
 write solution name.sol
+
+emphasis
+cpsolver predefined parameter settings for CP like search
+easycip predefined parameter settings for easy problems
+feasibility predefined parameter settings for feasibility problems
+hardlp predefined parameter settings for problems with a hard LP
+optimality predefined parameter settings for proving optimality fast

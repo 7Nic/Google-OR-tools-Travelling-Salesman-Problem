@@ -80,10 +80,10 @@ def main():
       list1.append(x[j, i])
       list2.append(x[i, j])
     
-    solver.Add(1 + (num_galaxies-3)*x[i, 1] + solver.Sum(list1) <= u[i])
-    solver.Add(u[i] <= num_galaxies - 1 - (num_galaxies-3)*x[1,i] - solver.Sum(list2))
+    solver.Add(1 + (num_galaxies-3)*x[i, 0] + solver.Sum(list1) <= u[i] <= num_galaxies - 1 - (num_galaxies-3)*x[0, i] - solver.Sum(list2))
+    # solver.Add(u[i] <= num_galaxies - 1 - (num_galaxies-3)*x[1,i] - solver.Sum(list2))
 
-  subsets = set(itertools.combinations(node_list,2))
+  subsets = set(itertools.combinations(node_list, 2))
   for subset in subsets:
     i = subset[0]
     j = subset[1]
@@ -126,6 +126,8 @@ def main():
         if x[i, j].solution_value() > 0.5:
           print('Galaxy %d to galaxy %d.  Cost = %d' %
             (i, j, costs[i][j]))
+  else:
+    print("Não é factível")
 
   milliseconds = time.time()*1000 - start_time
   print("Execution time:", milliseconds/1000, "s")
