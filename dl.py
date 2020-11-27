@@ -37,12 +37,12 @@ def main():
   solver = pywraplp.Solver.CreateSolver('SCIP')
   INFINITY = solver.infinity()
 
-  costs = readFile('qatar.tsp')
-  # costs = [[INF, 100, 125, 100,75],
-  # [100, INF, 50, 75, 125],
-  # [125, 50, INF, 100, 125],
-  # [100, 75, 100, INF, 50],
-  # [75, 125, 125, 50, INF]]
+  # costs = readFile('qatar.tsp')
+  costs = [[INF, 100, 125, 100,75],
+  [100, INF, 50, 75, 125],
+  [125, 50, INF, 100, 125],
+  [100, 75, 100, INF, 50],
+  [75, 125, 125, 50, INF]]
   num_galaxies = len(costs)
 
   # Model
@@ -52,7 +52,7 @@ def main():
   # Creating variables
   for i in range(num_galaxies):
     if (i != 0): 
-      u[i] = solver.IntVar(-INFINITY, INFINITY, '') # Integer
+      u[i] = solver.NumVar(-INFINITY, INFINITY, '') # Continuous
 
     for j in range(num_galaxies):
       x[i, j] = solver.IntVar(0, 1, '') # Integer
@@ -102,12 +102,12 @@ def main():
   solver.Minimize(solver.Sum(objective_terms))
 
   # Exporting model
-  # print("Exportando modelo...")
-  # model = solver.ExportModelAsLpFormat(True)
-  # f = open(r"./qatar_dl.lp","w+") 
-  # f.write(model)
-  # f.close()
-  # return
+  print("Exportando modelo...")
+  model = solver.ExportModelAsLpFormat(True)
+  f = open(r"./qatar_dl.lp","w+") 
+  f.write(model)
+  f.close()
+  return
 
   # Solving
   print("Starting...")
