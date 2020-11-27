@@ -43,7 +43,7 @@ def main():
     INFINITY = solver.infinity()
 
 
-    costs = readFile('djibouti.tsp')
+    costs = readFile('qatar.tsp')
     # costs = [[INF, 100, 125, 100,75],
     # [100, INF, 50, 75, 125],
     # [125, 50, INF, 100, 125],
@@ -55,7 +55,7 @@ def main():
     u = {}
     for i in range(num_galaxies):
         if (i != 0): 
-            u[i] = solver.IntVar(-INFINITY, INFINITY, '')
+            u[i] = solver.NumVar(-INFINITY, INFINITY, '')
 
         for j in range(num_galaxies):
             x[i, j] = solver.IntVar(0, 1, '')
@@ -71,12 +71,6 @@ def main():
         for i in range(num_galaxies):
             if (i != j): list2.append(x[i, j])
         solver.Add(solver.Sum(list2) == 1)
-
-
-    # for j in range(num_galaxies):
-    #     solver.Add(solver.Sum([x[i, j] for i in range(num_galaxies)]) == 1)
-
-    # =========
     
     for i in range(1, num_galaxies):
         solver.Add(u[i] >= 1)
@@ -102,12 +96,12 @@ def main():
     solver.Minimize(solver.Sum(objective_terms))
 
     # Exportar modelo
-    # print("Exportando modelo...")
-    # model = solver.ExportModelAsLpFormat(True)
-    # f = open(r"./djibouti.lp","w+") 
-    # f.write(model)
-    # f.close()
-    # return
+    print("Exportando modelo...")
+    model = solver.ExportModelAsLpFormat(True)
+    f = open(r"./qatar_mtz.lp","w+") 
+    f.write(model)
+    f.close()
+    return
 
     # Solve
     print("Iniciando a resolução")
