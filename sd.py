@@ -51,6 +51,7 @@ def main():
   u = {}
 
   # Creating variables
+  print("Creating variables...")
   for i in range(num_galaxies):
     if (i != 0): 
       u[i] = solver.IntVar(-INFINITY, INFINITY, '')
@@ -60,6 +61,7 @@ def main():
       y[i, j] = solver.IntVar(0, 1, '')
 
   # Adding constraints
+  print("Adding constraints...")
   for i in range(num_galaxies):
     list1 = []
     for j in range(num_galaxies):
@@ -97,8 +99,10 @@ def main():
   #   solver.Add(u[i] - u[j] + (num_galaxies-1)*x[i, j] + (num_galaxies-3)*x[j, i] <= num_galaxies - 2) 
 
   # Subtour elimination with SD
+  print("Subtour elimination with SD...")
   n = num_galaxies
   # (13)
+  print("(13)...")
   node_list = list()
   list1 = list()
   for i in range(1, n):
@@ -109,6 +113,7 @@ def main():
     solver.Add(solver.Sum(list1) + (n-1)*x[i, 1] == u[i])
 
   # (14)
+  print("(14)...")
   list2 = list()
   for j in range(1, n):
     for i in range(1, n):
@@ -117,6 +122,7 @@ def main():
     solver.Add(solver.Sum(list2) + 1 == u[j])
 
   # (15) and (16)
+  print("(15) and (16)...")
   subsets = set(itertools.combinations(node_list,2))
   for subset in subsets:
     # (15)    
@@ -131,13 +137,14 @@ def main():
     # (16)
     i = subset[0]
     j = subset[1]
-    solver.Add(u[j] + (n-2)*x[i,j] - (n-1)*(1-x[j,i] <= y[i,j] + y[j,i] <= u[j] - (1-x[j,i])))
+    solver.Add(u[j] + (n-2)*x[i,j] - (n-1)*(1-x[j,i]) <= y[i,j] + y[j,i] <= u[j] - (1-x[j,i]))
 
     i = subset[1]
     j = subset[0]
-    solver.Add(u[j] + (n-2)*x[i,j] - (n-1)*(1-x[j,i] <= y[i,j] + y[j,i] <= u[j] - (1-x[j,i])))
+    solver.Add(u[j] + (n-2)*x[i,j] - (n-1)*(1-x[j,i]) <= y[i,j] + y[j,i] <= u[j] - (1-x[j,i]))
 
   # (17)
+  print("(17)...")
   for j in range(1, n):
     solver.Add(1 + (1-x[1,j]) + (n-3)*x[j,1] <= u[j] <= (n-1) - (n-3)*x[1,j] - (1 - x[j,1]))
 
@@ -152,7 +159,7 @@ def main():
   # Exporting model
   print("Exportando modelo...")
   model = solver.ExportModelAsLpFormat(True)
-  f = open(r"./qatar_dl.lp","w+") 
+  f = open(r"./qatar_sd.lp","w+") 
   f.write(model)
   f.close()
   return
