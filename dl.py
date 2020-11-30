@@ -31,14 +31,15 @@ def readFile(file):
           distances[i][j] = distance(points[i][0],points[i][1],points[j][0],points[j][1])
 
   f.close()
-  return distances
+  return distances, points
 
 def main():
   start_time = time.time()*1000
   solver = pywraplp.Solver.CreateSolver('SCIP')
   INFINITY = solver.infinity()
 
-  costs = readFile('djibouti.tsp')
+  costs, points = readFile('test.tsp')
+  print(points)
 
   # costs = [[INF, 100, 125, 100,75],
   # [100, INF, 50, 75, 125],
@@ -103,7 +104,7 @@ def main():
       objective_terms.append(costs[i][j] * x[i, j])
   solver.Minimize(solver.Sum(objective_terms))
 
-  # Exporting model
+  # Export model
   # print("Exportando modelo...")
   # model = solver.ExportModelAsLpFormat(True)
   # f = open(r"./qatar_dl.lp","w+") 
@@ -119,17 +120,35 @@ def main():
   status = solver.Solve()
   print('Finished')
 
-  # Print solution.
+  # Print solution
+  pathX = list()
+  pathY = list()
   if status == pywraplp.Solver.OPTIMAL or status == pywraplp.Solver.FEASIBLE:
     print('Total cost = ', solver.Objective().Value(), '\n')
-    for i in range(num_galaxies):
+
+    i = 0
+    # Iterate num_galaxies times
+    for k in range(num_galaxies):
       for j in range(num_galaxies):
         # Test if x[i,j] is 1 (with tolerance for floating point arithmetic).
         if x[i, j].solution_value() > 0.5:
-          print('Galaxy %d to galaxy %d.  Cost = %d' %
-            (i, j, costs[i][j]))
+          print('Galaxy %d to galaxy %d.  Cost = %d' % (i, j, costs[i][j]))
+          i = j
+          break
   else:
-    print("Não é factível")
+    print("It's not feasible")
+
+
+  # if status == pywraplp.Solver.OPTIMAL or status == pywraplp.Solver.FEASIBLE:
+  #   print('Total cost = ', solver.Objective().Value(), '\n')
+  #   for i in range(num_galaxies):
+  #     for j in range(num_galaxies):
+  #       # Test if x[i,j] is 1 (with tolerance for floating point arithmetic).
+  #       if x[i, j].solution_value() > 0.5:
+  #         print('Galaxy %d to galaxy %d.  Cost = %d' %
+  #           (i, j, costs[i][j]))
+  # else:
+  #   print("It's not feasible")
 
   milliseconds = time.time()*1000 - start_time
   print("Execution time:", milliseconds/1000, "s")
