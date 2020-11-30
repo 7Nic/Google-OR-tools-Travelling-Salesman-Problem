@@ -30,6 +30,7 @@ def readFile(file):
               continue
           distances[i][j] = distance(points[i][0],points[i][1],points[j][0],points[j][1])
 
+  f.close()
   return distances
 
 def main():
@@ -38,6 +39,7 @@ def main():
   INFINITY = solver.infinity()
 
   costs = readFile('djibouti.tsp')
+
   # costs = [[INF, 100, 125, 100,75],
   # [100, INF, 50, 75, 125],
   # [125, 50, INF, 100, 125],
