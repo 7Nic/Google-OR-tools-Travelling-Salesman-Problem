@@ -37,12 +37,12 @@ def main():
   solver = pywraplp.Solver.CreateSolver('SCIP')
   INFINITY = solver.infinity()
 
-  # costs = readFile('qatar.tsp')
-  costs = [[INF, 100, 125, 100,75],
-  [100, INF, 50, 75, 125],
-  [125, 50, INF, 100, 125],
-  [100, 75, 100, INF, 50],
-  [75, 125, 125, 50, INF]]
+  costs = readFile('djibouti.tsp')
+  # costs = [[INF, 100, 125, 100,75],
+  # [100, INF, 50, 75, 125],
+  # [125, 50, INF, 100, 125],
+  # [100, 75, 100, INF, 50],
+  # [75, 125, 125, 50, INF]]
   num_galaxies = len(costs)
 
   # Model
@@ -80,19 +80,19 @@ def main():
       list1.append(x[j, i])
       list2.append(x[i, j])
     
-    solver.Add(1 + (num_galaxies-3)*x[i, 0] + solver.Sum(list1) <= u[i] <= num_galaxies - 1 - (num_galaxies-3)*x[0, i] - solver.Sum(list2))
+    solver.Add(1 + (num_galaxies-3)*x[i, 0] + solver.Sum(list1) <= u[i] <= num_galaxies - 1 - (num_galaxies-3)*x[0, i] - solver.Sum(list2)).set_is_lazy(True) 
     # solver.Add(u[i] <= num_galaxies - 1 - (num_galaxies-3)*x[1,i] - solver.Sum(list2))
 
   subsets = set(itertools.combinations(node_list, 2))
   for subset in subsets:
     i = subset[0]
     j = subset[1]
-    solver.Add(u[i] - u[j] + (num_galaxies-1)*x[i, j] + (num_galaxies-3)*x[j, i] <= num_galaxies - 2) 
+    solver.Add(u[i] - u[j] + (num_galaxies-1)*x[i, j] + (num_galaxies-3)*x[j, i] <= num_galaxies - 2).set_is_lazy(True) 
 
     # Itertools always give subset[1] greater than subset[0]
     i = subset[1]
     j = subset[0]
-    solver.Add(u[i] - u[j] + (num_galaxies-1)*x[i, j] + (num_galaxies-3)*x[j, i] <= num_galaxies - 2) 
+    solver.Add(u[i] - u[j] + (num_galaxies-1)*x[i, j] + (num_galaxies-3)*x[j, i] <= num_galaxies - 2).set_is_lazy(True)  
   
   # Objective
   objective_terms = []
@@ -102,18 +102,18 @@ def main():
   solver.Minimize(solver.Sum(objective_terms))
 
   # Exporting model
-  print("Exportando modelo...")
-  model = solver.ExportModelAsLpFormat(True)
-  f = open(r"./qatar_dl.lp","w+") 
-  f.write(model)
-  f.close()
-  return
+  # print("Exportando modelo...")
+  # model = solver.ExportModelAsLpFormat(True)
+  # f = open(r"./qatar_dl.lp","w+") 
+  # f.write(model)
+  # f.close()
+  # return
 
   # Solving
   print("Starting...")
   minutes = 10*60*1000
   seconds = 20*1000
-  solver.set_time_limit(seconds) # Time in ms
+  solver.set_time_limit(minutes) # Time in ms
   status = solver.Solve()
   print('Finished')
 

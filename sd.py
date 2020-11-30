@@ -37,12 +37,12 @@ def main():
   solver = pywraplp.Solver.CreateSolver('SCIP')
   INFINITY = solver.infinity()
 
-  costs = readFile('qatar.tsp')
-  # costs = [[INF, 100, 125, 100,75],
-  # [100, INF, 50, 75, 125],
-  # [125, 50, INF, 100, 125],
-  # [100, 75, 100, INF, 50],
-  # [75, 125, 125, 50, INF]]
+  # costs = readFile('qatar.tsp')
+  costs = [[INF, 100, 125, 100,75],
+  [100, INF, 50, 75, 125],
+  [125, 50, INF, 100, 125],
+  [100, 75, 100, INF, 50],
+  [75, 125, 125, 50, INF]]
   num_galaxies = len(costs)
 
   # Model
@@ -58,7 +58,7 @@ def main():
 
     for j in range(num_galaxies):
       x[i, j] = solver.IntVar(0, 1, '')
-      y[i, j] = solver.IntVar(0, 1, '')
+      y[i, j] = solver.IntVar(-INFINITY, INFINITY, '')
 
   # Adding constraints
   print("Adding constraints...")
@@ -74,30 +74,6 @@ def main():
       if (i != j): list2.append(x[i, j])
     solver.Add(solver.Sum(list2) == 1)
 
-  # DL
-  # node_list = list()
-  # for i in range(1, num_galaxies):
-  #   node_list.append(i)
-  #   list1 = list()
-  #   list2 = list()
-  #   for j in range(1, num_galaxies):
-  #     list1.append(x[j, i])
-  #     list2.append(x[i, j])
-    
-  #   solver.Add(1 + (num_galaxies-3)*x[i, 1] + solver.Sum(list1) <= u[i])
-  #   solver.Add(u[i] <= num_galaxies - 1 - (num_galaxies-3)*x[1,i] - solver.Sum(list2))
-
-  # subsets = set(itertools.combinations(node_list,2))
-  # for subset in subsets:
-  #   i = subset[0]
-  #   j = subset[1]
-  #   solver.Add(u[i] - u[j] + (num_galaxies-1)*x[i, j] + (num_galaxies-3)*x[j, i] <= num_galaxies - 2) 
-
-  #   # Itertools always give subset[1] greater than subset[0]
-  #   i = subset[1]
-  #   j = subset[0]
-  #   solver.Add(u[i] - u[j] + (num_galaxies-1)*x[i, j] + (num_galaxies-3)*x[j, i] <= num_galaxies - 2) 
-
   # Subtour elimination with SD
   print("Subtour elimination with SD...")
   n = num_galaxies
@@ -110,7 +86,7 @@ def main():
     for j in range(1, n):
       list1.append(y[i, j])
 
-    solver.Add(solver.Sum(list1) + (n-1)*x[i, 1] == u[i])
+    solver.Add(solver.Sum(list1) + (n-1)*x[i, 0] == u[i])
 
   # (14)
   print("(14)...")
@@ -123,30 +99,35 @@ def main():
 
   # (15) and (16)
   print("(15) and (16)...")
-  subsets = set(itertools.combinations(node_list,2))
-  for subset in subsets:
-    # (15)    
-    i = subset[0]
-    j = subset[1]
-    solver.Add(x[i,j] <= y[i,j] <= (n-2)*x[i,j])
+  for i in range(1, n):
+    for j in range(1, n):
+      solver.Add(x[i,j] <= y[i,j] <= (n-2)*x[i,j])  
+      solver.Add(u[j] + (n-2)*x[i,j] - (n-1)*(1-x[j,i]) <= y[i,j] + y[j,i] <= u[j] - (1-x[j,i]))
 
-    i = subset[1]
-    j = subset[0]
-    solver.Add(x[i,j] <= y[i,j] <= (n-2)*x[i,j])
+  # subsets = set(itertools.combinations(node_list,2))
+  # for subset in subsets:
+  #   # (15)    
+  #   i = subset[0]
+  #   j = subset[1]
+  #   solver.Add(x[i,j] <= y[i,j] <= (n-2)*x[i,j])
 
-    # (16)
-    i = subset[0]
-    j = subset[1]
-    solver.Add(u[j] + (n-2)*x[i,j] - (n-1)*(1-x[j,i]) <= y[i,j] + y[j,i] <= u[j] - (1-x[j,i]))
+  #   i = subset[1]
+  #   j = subset[0]
+  #   solver.Add(x[i,j] <= y[i,j] <= (n-2)*x[i,j])
 
-    i = subset[1]
-    j = subset[0]
-    solver.Add(u[j] + (n-2)*x[i,j] - (n-1)*(1-x[j,i]) <= y[i,j] + y[j,i] <= u[j] - (1-x[j,i]))
+  #   # (16)
+  #   i = subset[0]
+  #   j = subset[1]
+  #   solver.Add(u[j] + (n-2)*x[i,j] - (n-1)*(1-x[j,i]) <= y[i,j] + y[j,i] <= u[j] - (1-x[j,i]))
+
+  #   i = subset[1]
+  #   j = subset[0]
+  #   solver.Add(u[j] + (n-2)*x[i,j] - (n-1)*(1-x[j,i]) <= y[i,j] + y[j,i] <= u[j] - (1-x[j,i]))
 
   # (17)
   print("(17)...")
   for j in range(1, n):
-    solver.Add(1 + (1-x[1,j]) + (n-3)*x[j,1] <= u[j] <= (n-1) - (n-3)*x[1,j] - (1 - x[j,1]))
+    solver.Add(1 + (1-x[0,j]) + (n-3)*x[j,0] <= u[j] <= (n-1) - (n-3)*x[0,j] - (1 - x[j,0]))
 
   
   # Objective
@@ -157,12 +138,12 @@ def main():
   solver.Minimize(solver.Sum(objective_terms))
 
   # Exporting model
-  print("Exportando modelo...")
-  model = solver.ExportModelAsLpFormat(True)
-  f = open(r"./qatar_sd.lp","w+") 
-  f.write(model)
-  f.close()
-  return
+  # print("Exportando modelo...")
+  # model = solver.ExportModelAsLpFormat(True)
+  # f = open(r"./qatar_sd.lp","w+") 
+  # f.write(model)
+  # f.close()
+  # return
 
   # Solving
   print("Starting...")
