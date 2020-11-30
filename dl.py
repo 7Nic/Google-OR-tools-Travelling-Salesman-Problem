@@ -1,5 +1,6 @@
 # Sherali and driscoll formulation
 from ortools.linear_solver import pywraplp
+import matplotlib.pyplot as plt
 import numpy as np
 import itertools
 import time
@@ -38,8 +39,7 @@ def main():
   solver = pywraplp.Solver.CreateSolver('SCIP')
   INFINITY = solver.infinity()
 
-  costs, points = readFile('test.tsp')
-  print(points)
+  costs, points = readFile('western_sahara.tsp')
 
   # costs = [[INF, 100, 125, 100,75],
   # [100, INF, 50, 75, 125],
@@ -127,28 +127,25 @@ def main():
     print('Total cost = ', solver.Objective().Value(), '\n')
 
     i = 0
+    # pathX.append(points[i][0])
+    # pathY.append(points[i][1])
+    print(points)
+    print(points[0][0], points[0][1])
     # Iterate num_galaxies times
-    for k in range(num_galaxies):
+    for k in range(num_galaxies+1):
       for j in range(num_galaxies):
         # Test if x[i,j] is 1 (with tolerance for floating point arithmetic).
-        if x[i, j].solution_value() > 0.5:
+        if x[i, j].solution_value() > 0.5: 
+          pathX.append(points[i][0])
+          pathY.append(points[i][1])
           print('Galaxy %d to galaxy %d.  Cost = %d' % (i, j, costs[i][j]))
           i = j
           break
+
+    plt.plot(pathX, pathY, 'bo-', zorder=2)
+    plt.show()
   else:
     print("It's not feasible")
-
-
-  # if status == pywraplp.Solver.OPTIMAL or status == pywraplp.Solver.FEASIBLE:
-  #   print('Total cost = ', solver.Objective().Value(), '\n')
-  #   for i in range(num_galaxies):
-  #     for j in range(num_galaxies):
-  #       # Test if x[i,j] is 1 (with tolerance for floating point arithmetic).
-  #       if x[i, j].solution_value() > 0.5:
-  #         print('Galaxy %d to galaxy %d.  Cost = %d' %
-  #           (i, j, costs[i][j]))
-  # else:
-  #   print("It's not feasible")
 
   milliseconds = time.time()*1000 - start_time
   print("Execution time:", milliseconds/1000, "s")
