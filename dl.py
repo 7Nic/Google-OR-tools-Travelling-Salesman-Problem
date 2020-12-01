@@ -143,6 +143,7 @@ def main():
           break
 
     plt.plot(pathX, pathY, 'bo-', zorder=2)
+    plt.axis('off')
     plt.show()
   else:
     print("It's not feasible")
