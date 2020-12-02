@@ -56,7 +56,7 @@ def getClosestPoint(points, pointNumber, edge, num_galaxies):
 
 def main():
   start_time = time.time()*1000
-  FILE = 'uruguay.tsp'
+  FILE = 'western_sahara.tsp'
   costs, points = readFile(FILE) #costs and point coordinates
   num_galaxies = len(costs)
   edge = {} # edge[i, j] = 1 when there is an edge from i to j
@@ -92,17 +92,18 @@ def main():
   # Print solution
   print('Total cost = ', totalCost, '\n')
   pathStr = ""
-  f = open("uy734.sol", "w")
-  f.write("Ordem de visita dos vértices\n")
+  # f = open("uy734.sol", "w")
+  # f.write("Ordem de visita dos vértices\n")
   for point in path:
     pathStr = pathStr + "-->" + str(path[point]+1) # +1 to start in node 1
-    f.write(str(path[point]+1) + "\n")
+    # f.write(str(path[point]+1) + "\n")
   print(pathStr)
-  f.close()
+  # f.close()
 
-  plt.plot(pathX, pathY, 'bo-', zorder=2)
-  plt.axis('off')
-  plt.show()
+  # Plot
+  # plt.plot(pathX, pathY, 'bo-', zorder=2)
+  # plt.axis('off')
+  # plt.show()
 
   
 
