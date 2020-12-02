@@ -113,14 +113,14 @@ def main():
     j = int(line.split()[1])
     solver.Add(x[i, j] == 1)
     k += 1
-    if (k == num_galaxies/2): break
+    if (k > num_galaxies/1.5): break
   f.close()
 
 
   # Export model
   print("Exportando modelo...")
   model = solver.ExportModelAsLpFormat(True)
-  f = open(r"./models/"+ FILE +"_dl.lp","w+") 
+  f = open(r"./models/"+ FILE +"_dl_greedy.lp","w+") 
   f.write(model)
   f.close()
   return
