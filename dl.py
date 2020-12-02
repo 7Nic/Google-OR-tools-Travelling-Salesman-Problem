@@ -38,8 +38,8 @@ def main():
   start_time = time.time()*1000
   solver = pywraplp.Solver.CreateSolver('SCIP')
   INFINITY = solver.infinity()
-
-  costs, points = readFile('western_sahara.tsp')
+  FILE = "uruguay"
+  costs, points = readFile(FILE + '.tsp')
 
   # costs = [[INF, 100, 125, 100,75],
   # [100, INF, 50, 75, 125],
@@ -104,13 +104,26 @@ def main():
       objective_terms.append(costs[i][j] * x[i, j])
   solver.Minimize(solver.Sum(objective_terms))
 
+  # Start solution
+  f = open("./heuristics/solver_solutions/" + FILE + "_greedy.sol", "r")
+  lines = f.readlines()
+  k = 0
+  for line in lines:
+    i = int(line.split()[0])
+    j = int(line.split()[1])
+    solver.Add(x[i, j] == 1)
+    k += 1
+    if (k == num_galaxies/2): break
+  f.close()
+
+
   # Export model
-  # print("Exportando modelo...")
-  # model = solver.ExportModelAsLpFormat(True)
-  # f = open(r"./qatar_dl.lp","w+") 
-  # f.write(model)
-  # f.close()
-  # return
+  print("Exportando modelo...")
+  model = solver.ExportModelAsLpFormat(True)
+  f = open(r"./models/"+ FILE +"_dl.lp","w+") 
+  f.write(model)
+  f.close()
+  return
 
   # Solving
   print("Starting...")
