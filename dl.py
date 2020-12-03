@@ -38,7 +38,7 @@ def main():
   start_time = time.time()*1000
   solver = pywraplp.Solver.CreateSolver('SCIP')
   INFINITY = solver.infinity()
-  FILE = "djibouti"
+  FILE = "uruguay"
   costs, points = readFile(FILE + '.tsp')
   num_galaxies = len(costs)
 
@@ -103,12 +103,17 @@ def main():
   f = open("./heuristics/solver_solutions/" + FILE + "_2_opt.sol", "r")
   lines = f.readlines()
   k = 0
+  variables = list()
+  values = list()
   for line in lines:
     i = int(line.split()[0])
     j = int(line.split()[1])
-    solver.setHint(x[i, j] == 1)
+    variables.append(x[i, j])
+    values.append(1)
     k += 1
     # if (k > num_galaxies/2): break
+
+  solver.SetHint(variables, values)
   f.close()
 
 
