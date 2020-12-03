@@ -27,7 +27,7 @@ def readFile(file):
   for i in range(qttLines):
       for j in range(qttLines):
           if (i == j):
-              distances[i][j] = math.inf
+              distances[i][j] = INF
               continue
           distances[i][j] = distance(points[i][0],points[i][1],points[j][0],points[j][1])
 
@@ -38,7 +38,7 @@ def main():
   start_time = time.time()*1000
   solver = pywraplp.Solver.CreateSolver('SCIP')
   INFINITY = solver.infinity()
-  FILE = "djibouti"
+  FILE = "qatar"
   costs, points = readFile(FILE + '.tsp')
 
   # costs = [[INF, 100, 125, 100,75],
@@ -118,12 +118,12 @@ def main():
 
 
   # Export model
-  print("Exportando modelo...")
-  model = solver.ExportModelAsLpFormat(True)
-  f = open(r"./models/"+ FILE +"_dl.lp","w+") 
-  f.write(model)
-  f.close()
-  return
+  # print("Exportando modelo...")
+  # model = solver.ExportModelAsLpFormat(True)
+  # f = open(r"./models/"+ FILE +"_dl.lp","w+") 
+  # f.write(model)
+  # f.close()
+  # return
 
   # Solving
   print("Starting...")
@@ -142,10 +142,9 @@ def main():
     i = 0
     # pathX.append(points[i][0])
     # pathY.append(points[i][1])
-    print(points)
-    print(points[0][0], points[0][1])
+
     # Iterate num_galaxies times
-    for k in range(num_galaxies+1):
+    for k in range(num_galaxies):
       for j in range(num_galaxies):
         # Test if x[i,j] is 1 (with tolerance for floating point arithmetic).
         if x[i, j].solution_value() > 0.5: 

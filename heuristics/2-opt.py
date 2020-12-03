@@ -17,6 +17,9 @@ class Point:
 def distance(x1,y1,x2,y2):
   return math.sqrt((x1-x2)**2 + (y1-y2)**2)
 
+def distancePoints(p1, p2):
+  return math.sqrt((p1.x-p2.x)**2 + (p1.y-p2.y)**2)
+
 # Calculate distances
 def readFile(file):
   f = open("../data/" + file, "r")
@@ -53,6 +56,56 @@ def getClosestPoint(points, pointNumber, edge, num_galaxies):
 
   return closestPoint, smallerDistance
 
+def makePathCoordinates(points, path, pathX, pathY):
+  for i in range(len(path)):
+    pathX[i] = points[path[i]].x
+    pathY[i] = points[path[i]].y  
+
+
+def isSwapBetter(points, path, i, j):
+  if (i == len(points)-1): return False
+
+  if(i > j):
+    aux = i
+    i = j
+    j = aux
+
+  if(j == len(points)-1): 
+    initialDistance = distancePoints(points[path[i]], points[path[i+1]]) + distancePoints(points[path[j]], points[path[0]])
+    swapDistance = distancePoints(points[i], points[j]) + distancePoints(points[i+1], points[0])
+  else: 
+    initialDistance = distancePoints(points[path[i]], points[path[i+1]]) + distancePoints(points[path[j]], points[path[j+1]])
+    swapDistance = distancePoints(points[path[i]], points[path[j]]) + distancePoints(points[path[i+1]], points[path[j+1]])
+  print(f"{i} e {j} --> initial: {initialDistance} - swap: {swapDistance}")
+  if (swapDistance < initialDistance):
+    return True
+  else:
+    return False
+
+# Execute the swap
+# i, j: positions to swap
+# n: total quantity
+def swapPaths(path, i, j, n):
+  if (i > j):
+    aux = i
+    i = j
+    j = aux
+
+  if (i <= 0 and j >= n-1): return
+  
+  auxList = list()
+  for k in range(i+1, j+1):
+    auxList.append(path[k])
+
+  for k in range(i+1, j+1):
+    path[k] = auxList.pop()
+
+def calculateTotalCost(path, points):
+  totalCost = 0
+  for i in range(len(path)-1):
+    totalCost += distancePoints(points[path[i]], points[path[i+1]])
+
+  return totalCost
 
 def main():
   start_time = time.time()*1000
@@ -65,7 +118,7 @@ def main():
     for j in range(num_galaxies):
       edge[i, j] = 0
 
-  # Implementing heuristic
+  # Implementing greedy heuristic
   totalCost = 0
   curPoint = 0
   pathX = [points[curPoint].x]
@@ -89,6 +142,17 @@ def main():
 
 
 
+
+  # Implementing 2-opt heuristic
+  for i in range (len(points)):
+    for j in range(len(points)):
+      if(isSwapBetter(points, path, i, j)):
+        swapPaths(path, i, j, num_galaxies)
+
+  makePathCoordinates(points, path, pathX, pathY)
+
+  totalCost = calculateTotalCost(path, points)
+
   # Print solution
   print('Total cost = ', totalCost, '\n')
   f = open("./solver_solutions/"+FILE+"_greedy.sol", "w")
@@ -109,6 +173,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-# greedy = 9748.9467

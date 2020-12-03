@@ -1,6 +1,10 @@
-import itertools
+def test(x):
+	x[0] = 5
 
-l = [1,2,3,4,5]
-subsets = set(itertools.combinations(l,2))
+def main():
+	x = [1, 2, 3, 4, 5]
+	test(x)
+	print(x)
 
-print(subsets)
+if __name__ == "__main__":
+    main()
