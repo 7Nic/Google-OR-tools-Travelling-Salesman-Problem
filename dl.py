@@ -27,7 +27,7 @@ def readFile(file):
   for i in range(qttLines):
       for j in range(qttLines):
           if (i == j):
-              distances[i][j] = INF
+              distances[i][j] = math.inf
               continue
           distances[i][j] = distance(points[i][0],points[i][1],points[j][0],points[j][1])
 
@@ -38,7 +38,7 @@ def main():
   start_time = time.time()*1000
   solver = pywraplp.Solver.CreateSolver('SCIP')
   INFINITY = solver.infinity()
-  FILE = "uruguay"
+  FILE = "djibouti"
   costs, points = readFile(FILE + '.tsp')
 
   # costs = [[INF, 100, 125, 100,75],
@@ -104,23 +104,23 @@ def main():
       objective_terms.append(costs[i][j] * x[i, j])
   solver.Minimize(solver.Sum(objective_terms))
 
-  # Start solution
-  f = open("./heuristics/solver_solutions/" + FILE + "_greedy.sol", "r")
-  lines = f.readlines()
-  k = 0
-  for line in lines:
-    i = int(line.split()[0])
-    j = int(line.split()[1])
-    solver.Add(x[i, j] == 1)
-    k += 1
-    if (k > num_galaxies/1.5): break
-  f.close()
+  # Start solution (greedy heuristic)
+  # f = open("./heuristics/solver_solutions/" + FILE + "_greedy.sol", "r")
+  # lines = f.readlines()
+  # k = 0
+  # for line in lines:
+  #   i = int(line.split()[0])
+  #   j = int(line.split()[1])
+  #   solver.Add(x[i, j] == 1)
+  #   k += 1
+  #   # if (k > num_galaxies/1.2): break
+  # f.close()
 
 
   # Export model
   print("Exportando modelo...")
   model = solver.ExportModelAsLpFormat(True)
-  f = open(r"./models/"+ FILE +"_dl_greedy.lp","w+") 
+  f = open(r"./models/"+ FILE +"_dl.lp","w+") 
   f.write(model)
   f.close()
   return
