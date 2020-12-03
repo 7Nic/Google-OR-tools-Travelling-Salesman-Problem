@@ -76,11 +76,11 @@ def isSwapBetter(points, path, i, j):
   else: 
     initialDistance = distancePoints(points[path[i]], points[path[i+1]]) + distancePoints(points[path[j]], points[path[j+1]])
     swapDistance = distancePoints(points[path[i]], points[path[j]]) + distancePoints(points[path[i+1]], points[path[j+1]])
-  print(f"{i} e {j} --> initial: {initialDistance} - swap: {swapDistance}")
   if (swapDistance < initialDistance):
     return True
   else:
     return False
+
 
 # Execute the swap
 # i, j: positions to swap
@@ -140,9 +140,6 @@ def main():
   pathY.append(points[0].y)
   totalCost += distance(points[curPoint].x, points[curPoint].y, points[0].x, points[0].y)
 
-
-
-
   # Implementing 2-opt heuristic
   for i in range (len(points)):
     for j in range(len(points)):
@@ -155,7 +152,7 @@ def main():
 
   # Print solution
   print('Total cost = ', totalCost, '\n')
-  f = open("./solver_solutions/"+FILE+"_greedy.sol", "w")
+  f = open("./solver_solutions/"+FILE+"_2_opt.sol", "w")
   for i in range(num_galaxies):
     f.write(str(path[i]) + " " + str(path[i+1]) + "\n")
 

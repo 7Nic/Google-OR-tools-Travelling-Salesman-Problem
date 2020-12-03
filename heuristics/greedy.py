@@ -13,7 +13,6 @@ class Point:
     self.x = x
     self.y = y
 
-
 def distance(x1,y1,x2,y2):
   return math.sqrt((x1-x2)**2 + (y1-y2)**2)
 
@@ -89,7 +88,7 @@ def main():
 
 
 
-  # Print solution
+  # Print and write solution to file
   print('Total cost = ', totalCost, '\n')
   f = open("./solver_solutions/"+FILE+"_greedy.sol", "w")
   for i in range(num_galaxies):

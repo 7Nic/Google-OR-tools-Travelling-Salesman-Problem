@@ -38,14 +38,8 @@ def main():
   start_time = time.time()*1000
   solver = pywraplp.Solver.CreateSolver('SCIP')
   INFINITY = solver.infinity()
-  FILE = "qatar"
+  FILE = "djibouti"
   costs, points = readFile(FILE + '.tsp')
-
-  # costs = [[INF, 100, 125, 100,75],
-  # [100, INF, 50, 75, 125],
-  # [125, 50, INF, 100, 125],
-  # [100, 75, 100, INF, 50],
-  # [75, 125, 125, 50, INF]]
   num_galaxies = len(costs)
 
   # Model
@@ -104,26 +98,27 @@ def main():
       objective_terms.append(costs[i][j] * x[i, j])
   solver.Minimize(solver.Sum(objective_terms))
 
-  # Start solution (greedy heuristic)
+  # Start solution
   # f = open("./heuristics/solver_solutions/" + FILE + "_greedy.sol", "r")
-  # lines = f.readlines()
-  # k = 0
-  # for line in lines:
-  #   i = int(line.split()[0])
-  #   j = int(line.split()[1])
-  #   solver.Add(x[i, j] == 1)
-  #   k += 1
-  #   # if (k > num_galaxies/1.2): break
-  # f.close()
+  f = open("./heuristics/solver_solutions/" + FILE + "_2_opt.sol", "r")
+  lines = f.readlines()
+  k = 0
+  for line in lines:
+    i = int(line.split()[0])
+    j = int(line.split()[1])
+    solver.setHint(x[i, j] == 1)
+    k += 1
+    # if (k > num_galaxies/2): break
+  f.close()
 
 
   # Export model
-  # print("Exportando modelo...")
-  # model = solver.ExportModelAsLpFormat(True)
-  # f = open(r"./models/"+ FILE +"_dl.lp","w+") 
-  # f.write(model)
-  # f.close()
-  # return
+  print("Exportando modelo...")
+  model = solver.ExportModelAsLpFormat(True)
+  f = open(r"./models/"+ FILE +"_dl.lp","w+") 
+  f.write(model)
+  f.close()
+  return
 
   # Solving
   print("Starting...")
