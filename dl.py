@@ -38,7 +38,9 @@ def main():
   start_time = time.time()*1000
   solver = pywraplp.Solver.CreateSolver('SCIP')
   INFINITY = solver.infinity()
-  FILE = "uruguay"
+  solver.infinity()
+  solver.EnableOutput()
+  FILE = "djibouti"
   costs, points = readFile(FILE + '.tsp')
   num_galaxies = len(costs)
 
@@ -105,25 +107,38 @@ def main():
   k = 0
   variables = list()
   values = list()
+  edges = list()
+
   for line in lines:
     i = int(line.split()[0])
     j = int(line.split()[1])
-    variables.append(x[i, j])
-    values.append(1)
+
+    # variables.append(x[i, j])
+    # values.append(1)
+    edges.append((i,j))
     k += 1
     # if (k > num_galaxies/2): break
+
+
+  for a in range(num_galaxies):
+    for b in range(num_galaxies):
+      variables.append(x[i, j])  
+      if ((a,b) in edges):
+        values.append(1)
+      else:
+        values.append(0)
 
   solver.SetHint(variables, values)
   f.close()
 
 
-  # Export model
-  print("Exportando modelo...")
-  model = solver.ExportModelAsLpFormat(True)
-  f = open(r"./models/"+ FILE +"_dl.lp","w+") 
-  f.write(model)
-  f.close()
-  return
+  # # Export model
+  # print("Exportando modelo...")
+  # model = solver.ExportModelAsLpFormat(True)
+  # f = open(r"./models/"+ FILE +"_2opt_dl.lp","w+") 
+  # f.write(model)
+  # f.close()
+  # return
 
   # Solving
   print("Starting...")
@@ -137,7 +152,6 @@ def main():
   pathX = list()
   pathY = list()
   if status == pywraplp.Solver.OPTIMAL or status == pywraplp.Solver.FEASIBLE:
-    print('Total cost = ', solver.Objective().Value(), '\n')
 
     i = 0
     # pathX.append(points[i][0])
@@ -154,6 +168,7 @@ def main():
           i = j
           break
 
+    print('Total cost = ', solver.Objective().Value(), '\n')
     plt.plot(pathX, pathY, 'bo-', zorder=2)
     plt.axis('off')
     plt.show()
