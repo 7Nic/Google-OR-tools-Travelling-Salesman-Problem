@@ -8,7 +8,7 @@ import math
 import utils
 import dlModel as dl
 
-FILE = "djibouti"
+FILE = "qatar"
 start_time = time.time()*1000
 
 def main():
@@ -52,7 +52,7 @@ def SolveModel(solver, num_nodes, modelVars, costs, points):
     print("Starting...")
     minutes = 10*60*1000 #10 minutes
     seconds = 20*1000 # 20 seconds
-    solver.set_time_limit(seconds)  # Time in ms
+    solver.set_time_limit(minutes)  # Time in ms
     status = solver.Solve()
     print('Finished')
 

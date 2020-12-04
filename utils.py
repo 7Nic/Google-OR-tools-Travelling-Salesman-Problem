@@ -57,16 +57,8 @@ def readHeuristics(fileName, solver, modelVars, costs, num_nodes, model_var):
     path.sort(key=sortKey)
 
     # Adding half best values of heuristic path
-    for i in range(0, int(num_nodes/2)):
+    for i in range(0, int(num_nodes/4)):
         solver.Add(modelVars[path[i][0], path[i][1]] == 1)
-
-    # for line in lines:
-    #     i = int(line.split()[0])
-    #     j = int(line.split()[1])
-    #     solver.Add(modelVars[i, j] == 1)
-    #     edges.append((i, j))
-    #     k += 1
-    #     if (k > num_nodes/2): break
 
     for a in range(num_nodes):
         for b in range(num_nodes):
