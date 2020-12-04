@@ -34,8 +34,10 @@ def readGraph(file):
     f.close()
     return distances, points
 
+def sortKey(e):
+    return e[2]
 
-def readHeuristics(fileName, num_nodes, model_var):
+def readHeuristics(fileName, solver, modelVars, costs, num_nodes, model_var):
     # Start solution
     # f = open("./heuristics/solver_solutions/" + FILE + "_greedy.sol", "r")
     f = open("./heuristics/solver_solutions/" + fileName, "r")
@@ -44,12 +46,27 @@ def readHeuristics(fileName, num_nodes, model_var):
     variables = list()
     values = list()
     edges = list()
+    path = list()
 
     for line in lines:
         i = int(line.split()[0])
         j = int(line.split()[1])
-        edges.append((i, j))
-        k += 1
+        cost = costs[i][j]
+        path.append((i, j, cost))
+
+    path.sort(key=sortKey)
+
+    # Adding half best values of heuristic path
+    for i in range(0, num_nodes/2):
+        solver.Add(modelVars[path[0], path[1]] == 1)
+
+    # for line in lines:
+    #     i = int(line.split()[0])
+    #     j = int(line.split()[1])
+    #     solver.Add(modelVars[i, j] == 1)
+    #     edges.append((i, j))
+    #     k += 1
+    #     if (k > num_nodes/2): break
 
     for a in range(num_nodes):
         for b in range(num_nodes):
@@ -61,7 +78,6 @@ def readHeuristics(fileName, num_nodes, model_var):
 
     f.close()
     return variables, values
-
 
 def distance(x1, y1, x2, y2):
     return math.sqrt((x1-x2)**2 + (y1-y2)**2)

@@ -21,10 +21,10 @@ def main():
     solver.EnableOutput()
 
     #create model
-    modelVars= dl.dlModel(solver, num_galaxies, costs)
+    modelVars = dl.dlModel(solver, num_galaxies, costs)
     
     #read heuristic solution
-    variables, values = utils.readHeuristics( FILE + "_2_opt.sol" , num_galaxies, modelVars)
+    variables, values = utils.readHeuristics( FILE + "_2_opt.sol" , solver, modelVars, costs, num_galaxies, modelVars)
     # variables, values = utils.readHeuristics( FILE + "_greedy.sol" , num_galaxies, modeloVars)
 
     solver.SetHint(variables, values)
@@ -47,8 +47,8 @@ def ExportModel(solver):
 def SolveModel(solver, num_nodes, modelVars, costs, points):
     # Solving
     print("Starting...")
-    minutes = 10*60*1000
-    seconds = 20*1000
+    minutes = 10*60*1000 #10 minutes
+    seconds = 20*1000 # 20 seconds
     solver.set_time_limit(minutes)  # Time in ms
     status = solver.Solve()
     print('Finished')
