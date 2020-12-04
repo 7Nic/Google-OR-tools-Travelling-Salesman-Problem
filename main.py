@@ -13,6 +13,7 @@ start_time = time.time()*1000
 
 def main():
     #read graph
+    print("Reading graph...")
     costs, points = utils.readGraph(FILE + '.tsp')
     num_galaxies = len(costs)
 
@@ -20,9 +21,11 @@ def main():
     solver = pywraplp.Solver.CreateSolver('SCIP')
     solver.EnableOutput()
 
+    print("Creating model...")
     #create model
     modelVars = dl.dlModel(solver, num_galaxies, costs)
-    
+
+    print("Reading heuristic...")    
     #read heuristic solution
     variables, values = utils.readHeuristics( FILE + "_2_opt.sol" , solver, modelVars, costs, num_galaxies, modelVars)
     # variables, values = utils.readHeuristics( FILE + "_greedy.sol" , num_galaxies, modeloVars)
