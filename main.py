@@ -6,10 +6,12 @@ import itertools
 import time
 import math
 import utils
-import dlModel as dl
+import dl
+import mtz
 
-FILE = "qatar"
+FILE = "uruguay"
 start_time = time.time()*1000
+TIME_LIMIT = 27*60*1000 #10 minutes
 
 def main():
     #read graph
@@ -20,7 +22,7 @@ def main():
     #create solver
     solver = pywraplp.Solver.CreateSolver('SCIP')
     solver.EnableOutput()
-
+    
     print("Creating model...")
     #create model
     modelVars = dl.dlModel(solver, num_galaxies, costs)
@@ -28,12 +30,12 @@ def main():
     print("Reading heuristic...")    
     #read heuristic solution
     variables, values = utils.readHeuristics( FILE + "_2_opt.sol" , solver, modelVars, costs, num_galaxies, modelVars)
-    # variables, values = utils.readHeuristics( FILE + "_greedy.sol" , num_galaxies, modeloVars)
+    
 
-    solver.SetHint(variables, values)
+    # solver.SetHint(variables, values)
 
-    # ExportModel(solver)
-    SolveModel(solver, num_galaxies, modelVars, costs, points)
+    ExportModel(solver)
+    # SolveModel(solver, num_galaxies, modelVars, costs, points)
     
 
 
@@ -50,9 +52,8 @@ def ExportModel(solver):
 def SolveModel(solver, num_nodes, modelVars, costs, points):
     # Solving
     print("Starting...")
-    minutes = 10*60*1000 #10 minutes
-    seconds = 20*1000 # 20 seconds
-    solver.set_time_limit(minutes)  # Time in ms
+  
+    solver.set_time_limit(TIME_LIMIT)  # Time in ms
     status = solver.Solve()
     print('Finished')
 
