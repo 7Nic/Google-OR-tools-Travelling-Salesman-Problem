@@ -11,13 +11,13 @@ import mtz
 
 FILE = "uruguay"
 start_time = time.time()*1000
-TIME_LIMIT = 27*60*1000 #10 minutes
+TIME_LIMIT = 10*60*1000 #10 minutes
 
 def main():
     #read graph
     print("Reading graph...")
     costs, points = utils.readGraph(FILE + '.tsp')
-    num_galaxies = len(costs)
+    num_nodes = len(costs)
 
     #create solver
     solver = pywraplp.Solver.CreateSolver('SCIP')
@@ -25,17 +25,14 @@ def main():
     
     print("Creating model...")
     #create model
-    modelVars = dl.dlModel(solver, num_galaxies, costs)
+    modelVars = dl.dlModel(solver, num_nodes, costs)
 
     print("Reading heuristic...")    
     #read heuristic solution
-    variables, values = utils.readHeuristics( FILE + "_2_opt.sol" , solver, modelVars, costs, num_galaxies, modelVars)
+    utils.readHeuristicsGuloso( FILE + "_2_opt.sol" , solver, modelVars, costs, num_nodes)
     
-
-    # solver.SetHint(variables, values)
-
-    ExportModel(solver)
-    # SolveModel(solver, num_galaxies, modelVars, costs, points)
+    # ExportModel(solver)
+    SolveModel(solver, num_nodes, modelVars, costs, points)
     
 
 
