@@ -10,9 +10,18 @@ import utils
 
 
 def dlModel(solver, num_nodes, costs ):
+  # Function used to add the restrictions, variables and objective to the solver.
+  # After it is executed, the Sherali and driscoll formulation is modeled into the solver
+  # PARAMS
+    # solver   -> instance of ortools.linear_solver.Solver
+    # num_nodes-> number of nodes in the problem
+    # costs    -> costs matrix of the problem
+    # RETURNS
+    # x -> dict of variables not involved in subtour avoiding restrictions (tuple to ortools.linear_solver.Variable)
+
   # Model
-  x = {}
-  u = {}
+  x = {} #this is returned
+  u = {} #this is not
   inf = solver.infinity()
 
   # Creating variables
