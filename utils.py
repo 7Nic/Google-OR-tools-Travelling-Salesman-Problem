@@ -8,10 +8,16 @@ import math
 
 INF = 10000000000
 PERCENTAGE = 50
+
 # Calculate distances
-
-
 def readGraph(file):
+    # Takes the input file and returns a costs matrix and the list of read points
+    # PARAMS
+    # file  -> name of the file
+    # RETURNS
+    # distances -> costs matrix
+    # points -> list of points
+
     f = open("./data/" + file, "r")
     qttLines = int(f.readline())
     distances = np.zeros([qttLines, qttLines], dtype=float)
@@ -39,9 +45,16 @@ def readGraph(file):
 def sortKey(e):
     return e[2]
 
-
-
 def readHeuristicsGuloso(fileName, solver, modelVars, costs, num_nodes):
+    # Function used to add the restrictions related to the PERCENTAGE/100*num_nodes modelVars
+    # that were given in the fileName solution
+    # PARAMS
+    # fileName -> name of the file containing the previous solution
+    # solver   -> instance of ortools.linear_solver.Solver
+    # modelVars-> ortools.linear_solver.Variable; variables of the model
+    # num_nodes-> number of nodes in the problem
+    # costs    -> costs matrix of the problem
+
     # Start solution
     f = open("./heuristics/solver_solutions/" + fileName, "r")
     lines = f.readlines()
@@ -65,6 +78,14 @@ def readHeuristicsGuloso(fileName, solver, modelVars, costs, num_nodes):
 
 
 def readHeuristics(fileName, solver, modelVars, costs, num_nodes):
+    # Function used to give a initial solution to the solver using the solver.SetHint method
+    # PARAMS
+    # fileName -> name of the file containing the previous solution
+    # solver   -> instance of ortools.linear_solver.Solver
+    # modelVars-> ortools.linear_solver.Variable; variables of the model
+    # num_nodes-> number of nodes in the problem
+    # costs    -> costs matrix of the problem
+
     # Start solution
     f = open("./heuristics/solver_solutions/" + fileName, "r")
     lines = f.readlines()
@@ -103,50 +124,3 @@ def readHeuristics(fileName, solver, modelVars, costs, num_nodes):
 
 def distance(x1, y1, x2, y2):
     return math.sqrt((x1-x2)**2 + (y1-y2)**2)
-
-def readSolFile(FILE, points, num_nodes):
-    vars = []   
-    # Creating variables
-    for i in range(num_nodes):
-        if (i != 0): 
-          varName = "u"+str(i)
-          vars.append(varName)
-
-        for j in range(num_nodes):
-          varName = "x"+" "+str(i)+" "+str(j)
-          vars.append(varName)
-          
-
-    f = open(FILE, 'r')
-    lines = f.readlines()
-
-    path = list()
-    for k in range(2, len(lines)):
-        numVar = int(lines[k].split(" ")[0][1:])
-
-        if (vars[numVar][0] != "x"): break
-
-        curI = int(vars[numVar].split(" ")[1])
-        curJ = int(vars[numVar].split(" ")[2])
-        path.append((curI, curJ))
-        # print((curI, curJ))
-
-    pathX = list()
-    pathY = list()
-    i = 0
-    while (j != 0):
-        j = path[i][1]
-        print(i, j)
-        pathX.append(points[i][0])
-        pathY.append(points[i][1])
-        i = j
-
-    # Last edge to plot
-    pathX.append(points[0][0])
-    pathY.append(points[0][1])
-
-    f.close()
-    plt.plot(pathX, pathY, 'bo-', zorder=2)
-    plt.axis('off')
-    plt.show()
-    exit()
