@@ -29,7 +29,7 @@ def main():
 
     print("Reading heuristic...")    
     #read heuristic solution
-    utils.readHeuristicsGuloso( FILE + "_2_opt.sol" , solver, modelVars, costs, num_nodes)
+    utils.readHeuristics( FILE + "_2_opt.sol" , solver, modelVars, costs, num_nodes)
     
     # ExportModel(solver)
     SolveModel(solver, num_nodes, modelVars, costs, points)
