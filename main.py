@@ -8,10 +8,13 @@ import math
 import utils
 import dl
 import mtz
-
-FILE = "uruguay"
 start_time = time.time()*1000
+
+# ===== OPTIONS =====
+FILE = "uruguay"
+READ_HEURISTIC = True
 TIME_LIMIT = 10*60*1000 #10 minutes
+
 
 def main():
     #read graph
@@ -27,9 +30,10 @@ def main():
     #create model
     modelVars = dl.dlModel(solver, num_nodes, costs)
 
-    print("Reading heuristic...")    
-    #read heuristic solution
-    utils.readHeuristics( FILE + "_2_opt.sol" , solver, modelVars, costs, num_nodes)
+    if (READ_HEURISTIC):
+        print("Reading heuristic...")    
+        #read heuristic solution
+        utils.readHeuristics( FILE + "_2_opt.sol" , solver, modelVars, costs, num_nodes)
     
     # ExportModel(solver)
     SolveModel(solver, num_nodes, modelVars, costs, points)
