@@ -11,7 +11,7 @@ import mtz
 start_time = time.time()*1000
 
 # ===== OPTIONS =====
-FILE = "uruguay"
+FILE = "western_sahara"
 READ_HEURISTIC = True
 TIME_LIMIT = 10*60*1000 #10 minutes
 
