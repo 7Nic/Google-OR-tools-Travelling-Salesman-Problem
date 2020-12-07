@@ -1,5 +1,7 @@
 # Branch-and-cut-Travelling-Salesman-Problem
 
+Para melhor visualização é possível ler este arquivo em: https://hackmd.io/hLokje-ZSOuQViRUpOiLYg?view
+
 ### Os arquivos estão divididos da seguinte maneira:
 - main.py: arquivo principal a ser executado
 - utils.py: funções de auxílio
