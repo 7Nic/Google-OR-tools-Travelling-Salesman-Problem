@@ -33,9 +33,6 @@ def main():
     
     # ExportModel(solver)
     SolveModel(solver, num_nodes, modelVars, costs, points)
-    
-
-
 
 def ExportModel(solver):
     # Export model
