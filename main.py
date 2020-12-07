@@ -15,7 +15,6 @@ FILE = "uruguay"
 READ_HEURISTIC = True
 TIME_LIMIT = 10*60*1000 #10 minutes
 
-
 def main():
     #read graph
     print("Reading graph...")
