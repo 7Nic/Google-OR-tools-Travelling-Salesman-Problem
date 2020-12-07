@@ -24,7 +24,12 @@ A instância a ser analisada pode ser configurada no arquivo main.py na linha 14
 ### 2 - Heurística
 Pode-se ligar ou desligar a leitura de heurística na linha 15 no arquivo main.py
 
-### 3 - Exportar ou resolver
+### 3 - Modelagem
+É possível escolher qual modelagem utilizar: Desrochers e Laporte ou Miller, Tucker e Zemlin. Os arquivos dl.py e mtz.py possuem
+a implementação de cada uma. Basta utilizar as funções *dlModel* ou *mtxModel* na linha 30 de main.py. A implementação atual usa a
+modelagem de Desrochers e Laporte.
+
+### 4 - Exportar ou resolver
 Pode-se apenas resolver o problema pelo presente programa ou exportar o modelo em um formato .lp para execução em outro solver.
 As linhas 34 e 35 do arquivo main.py determinam qual dos dois será executado, basta comentar uma das linhas
 
